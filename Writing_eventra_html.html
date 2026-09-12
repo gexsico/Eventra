@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><base href="https://d16ilfvy4mv02r.cloudfront.net/workspaces/G2iQN4SbrwlnwhE7fWP8BHnYbAccTcdI/2fd274cd-a96c-45a0-b4e3-e68a3bc95857/files/">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>EVENTRA — Discover what's happening around you.</title>
+<meta name="description" content="Eventra is a premium city guide for real events happening around you. Concerts, festivals, theatre, nightlife, art, food and more." />
+<meta name="theme-color" content="#F5F4F1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        bg: 'var(--bg)',
+        surface: 'var(--surface)',
+        surface2: 'var(--surface-2)',
+        ink: 'var(--ink)',
+        muted: 'var(--muted)',
+        line: 'var(--line)',
+        accent: 'var(--accent)',
+        live: 'var(--live)',
+        sun: 'var(--sun)',
+        sky: 'var(--sky)'
+      },
+      fontFamily: {
+        display: ['Fraunces', 'ui-serif', 'Georgia', 'serif'],
+        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+    <style>
+  /* ═══════════ TOKENS ═══════════ */
+  :root{
+    --bg:#F5F4F1;
+    --surface:#FFFFFF;
+    --surface-2:#FAF9F6;
+    --ink:#131312;
+    --muted:#6E6E67;
+    --line:#E5E3DD;
+
+    /* bright, non-neon spot colours */
+    --accent:#FF4D2E;
+    --accent-50:rgba(255,77,46,.10);
+    --live:#0FB57E;
+    --sun:#FFB800;
+    --sky:#2F7BF6;
+
+    --glass:rgba(255,255,255,.62);
+    --glass-line:rgba(255,255,255,.8);
+    --shadow:rgba(19,19,18,.07);
+
+    --map-base:#EEECE7;
+    --map-road:#FFFFFF;
+    --map-minor:#E3E0D9;
+    --map-water:#DCE5E1;
+    --map-block:#E8E5DF;
+
+    --ease:cubic-bezier(.16,1,.3,1);
+    --ease-io:cubic-bezier(.65,.05,.36,1);
+  }
+  .dark{
+    --bg:#111110;
+    --surface:#1A1A19;
+    --surface-2:#161615;
+    --ink:#F3F2EE;
+    --muted:#A5A39D;
+    --line:rgba(255,255,255,.09);
+    --accent:#FF6444;
+    --accent-50:rgba(255,100,68,.14);
+    --live:#2BD69B;
+    --glass:rgba(255,255,255,.055);
+    --glass-line:rgba(255,255,255,.10);
+    --shadow:rgba(0,0,0,.5);
+    --map-base:#181817;
+    --map-road:#242423;
+    --map-minor:#1E1E1D;
+    --map-water:#16201F;
+    --map-block:#1C1C1B;
+  }
+
+  *{ -webkit-tap-highlight-color:transparent; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+    font-feature-settings:"cv11","ss01";
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    overflow-x:hidden;
+    transition:background-color .6s var(--ease), color .6s var(--ease);
+  }
+  body.locked{ overflow:hidden; }
+  ::selection{ background:var(--accent); color:#fff; }
+  .display{ font-family:Fraunces,ui-serif,Georgia,serif; font-variation-settings:"SOFT" 0,"WONK" 1; }
+  .display-soft{ font-family:Fraunces,ui-serif,Georgia,serif; font-variation-settings:"SOFT" 70,"WONK" 0; }
+
+  /* ═══════════ FILM GRAIN ═══════════ */
+  .grain::after{
+    content:""; position:fixed; inset:-140px; pointer-events:none; z-index:78; opacity:.05;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
+    mix-blend-mode:multiply;
+  }
+  .dark .grain::after{ mix-blend-mode:screen; opacity:.04; }
+
+  /* ═══════════ LOADER ═══════════ */
+  #loader{ position:fixed; inset:0; z-index:120; background:var(--bg); display:grid; place-items:center;
+           transition:opacity .7s var(--ease), visibility .7s; }
+  #loader.done{ opacity:0; visibility:hidden; pointer-events:none; }
+  #loaderBar{ height:100%; width:0; background:var(--accent); transition:width .9s var(--ease-io); }
+  #loaderWord{ letter-spacing:.55em; padding-left:.55em; }
+
+  /* ═══════════ GLASS ═══════════ */
+  .glass{
+    background:var(--glass);
+    -webkit-backdrop-filter:blur(24px) saturate(1.6);
+    backdrop-filter:blur(24px) saturate(1.6);
+    border:1px solid var(--glass-line);
+  }
+  .glass-sh{ box-shadow:0 1px 0 rgba(255,255,255,.55) inset, 0 22px 70px -26px var(--shadow); }
+  .dark .glass-sh{ box-shadow:0 1px 0 rgba(255,255,255,.05) inset, 0 28px 80px -30px rgba(0,0,0,.75); }
+
+  /* ═══════════ REVEAL SYSTEM ═══════════ */
+  .rv{ opacity:0; transform:translate3d(0,30px,0); will-change:transform,opacity;
+       transition:opacity .95s var(--ease), transform 1.05s var(--ease); transition-delay:var(--d,0ms); }
+  .rv.in{ opacity:1; transform:none; }
+  .rv-l{ transform:translate3d(-28px,0,0); }
+  .rv-r{ transform:translate3d(28px,0,0); }
+  .rv-s{ transform:scale(.965); }
+
+  .mask{ clip-path:inset(0 0 108% 0); transform:translate3d(0,.14em,0); will-change:clip-path,transform;
+         transition:clip-path 1.15s var(--ease), transform 1.15s var(--ease); transition-delay:var(--d,0ms); }
+  .mask.in{ clip-path:inset(0 0 -22% 0); transform:none; }
+
+  .img-rev{ clip-path:inset(0 0 0 100%); transition:clip-path 1.3s var(--ease); transition-delay:var(--d,0ms); }
+  .img-rev.in{ clip-path:inset(0 0 0 0); }
+
+  /* ═══════════ TYPE LINKS ═══════════ */
+  .nav-link{ position:relative; }
+  .nav-link::after{ content:""; position:absolute; left:0; right:0; bottom:-6px; height:1.5px; background:var(--accent);
+    transform:scaleX(0); transform-origin:left; transition:transform .55s var(--ease); }
+  .nav-link:hover::after{ transform:scaleX(1); }
+  .nav-link.on{ color:var(--ink); }
+  .nav-link.on::after{ transform:scaleX(1); }
+
+  .u-link{ position:relative; display:inline-block; }
+  .u-link::after{ content:""; position:absolute; left:0; bottom:-2px; width:100%; height:1px; background:currentColor;
+    transform-origin:right; transition:transform .5s var(--ease); opacity:.3; }
+  .u-link:hover::after{ transform:scaleX(0); transform-origin:left; }
+
+  /* ═══════════ BUTTONS ═══════════ */
+  .btn{ position:relative; overflow:hidden; isolation:isolate;
+        transition:color .5s var(--ease), border-color .5s var(--ease), transform .5s var(--ease); }
+  .btn > span{ position:relative; z-index:2; }
+  .btn::before{ content:""; position:absolute; inset:0; z-index:1; background:var(--accent);
+                transform:translateY(101%); transition:transform .6s var(--ease); }
+  .btn:hover::before{ transform:translateY(0); }
+  .btn:hover{ color:#fff; border-color:var(--accent); }
+  .btn:active{ transform:scale(.975); }
+  .btn-ghost::before{ background:var(--ink); }
+  .btn-ghost:hover{ color:var(--bg); border-color:var(--ink); }
+
+  .arrow{ transition:transform .55s var(--ease); }
+  .group:hover .arrow{ transform:translateX(5px); }
+
+  /* ═══════════ CARDS ═══════════ */
+  .ev-card{ transition:transform .7s var(--ease); }
+  .ev-card:hover{ transform:translateY(-5px); }
+  .ev-img{ transition:transform 1.3s var(--ease), filter 1s ease; }
+  .ev-card:hover .ev-img, .zoom-parent:hover .ev-img{ transform:scale(1.055); }
+  .view-tag{ opacity:0; transform:translateY(8px) scale(.9); transition:opacity .5s var(--ease), transform .6s var(--ease); }
+  .ev-card:hover .view-tag{ opacity:1; transform:none; }
+  .fallback{ background:linear-gradient(135deg,#FF4D2E 0%,#FFB800 45%,#0FB57E 100%); }
+  .scrim{ background:linear-gradient(to top,rgba(0,0,0,.66) 0%,rgba(0,0,0,.12) 46%,transparent 78%); }
+
+  .row-hl{ transition:background-color .5s var(--ease), padding-left .6s var(--ease); }
+  .row-hl:hover{ background:var(--accent-50); padding-left:14px; }
+
+  /* ═══════════ TILT ═══════════ */
+  .tilt{ perspective:900px; }
+  .tilt-in{ transform-style:preserve-3d; transition:transform .8s var(--ease); }
+
+  /* ═══════════ MAP ═══════════ */
+  .marker .pin{ width:13px; height:13px; border-radius:999px; background:var(--pin); border:2.5px solid var(--surface);
+    box-shadow:0 6px 18px -6px rgba(0,0,0,.55); transition:transform .55s var(--ease), box-shadow .55s var(--ease); }
+  .marker:hover .pin{ transform:scale(1.4); }
+  .marker.on .pin{ transform:scale(1.6); box-shadow:0 0 0 6px color-mix(in srgb, var(--pin) 26%, transparent); }
+  .marker{ transition:opacity .45s var(--ease); }
+  .marker .tag{ position:absolute; left:50%; bottom:100%; margin-bottom:6px; background:var(--surface); color:var(--ink);
+    border:1px solid var(--line); padding:7px 11px; border-radius:11px; font-size:11px; white-space:nowrap;
+    box-shadow:0 18px 40px -18px rgba(0,0,0,.5); max-width:210px; overflow:hidden; text-overflow:ellipsis;
+    opacity:0; transform:translate(-50%,4px) scale(.94); transition:opacity .35s var(--ease), transform .5s var(--ease); pointer-events:none; }
+  .marker.on .tag{ opacity:1; transform:translate(-50%,-6px) scale(1); }
+  @keyframes pingSoft{ 0%{transform:scale(.55);opacity:.75} 80%,100%{transform:scale(2.6);opacity:0} }
+  .ping{ animation:pingSoft 3.2s var(--ease) infinite; }
+
+  /* ═══════════ RADAR ═══════════ */
+  @keyframes sweep{ to{ transform:rotate(360deg) } }
+  @keyframes breathe{ 0%,100%{opacity:.14} 50%{opacity:.36} }
+  @keyframes dotIn{ from{opacity:0;transform:translate(-50%,-50%) scale(.2)} to{opacity:1;transform:translate(-50%,-50%) scale(1)} }
+  .sweep{ animation:sweep 8.5s linear infinite; transform-origin:center; }
+  .ring{ animation:breathe 6s ease-in-out infinite; }
+  .ddot{ animation:dotIn .8s var(--ease) both; }
+
+  /* ═══════════ CURSOR + PEEK ═══════════ */
+  #cursor{ position:fixed; top:0; left:0; z-index:110; pointer-events:none; width:9px; height:9px; border-radius:999px;
+    background:var(--ink); transform:translate(-50%,-50%); display:grid; place-items:center; border:1px solid transparent;
+    transition:width .45s var(--ease), height .45s var(--ease), background-color .4s var(--ease),
+               border-color .4s var(--ease), opacity .3s var(--ease); }
+  #cursor span{ font-size:9px; letter-spacing:.24em; text-transform:uppercase; font-weight:500; color:var(--ink);
+    opacity:0; transition:opacity .3s .06s; white-space:nowrap; }
+  #cursor.big{ width:92px; height:92px; background:var(--glass); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); border-color:var(--glass-line); }
+  #cursor.big span{ opacity:1; }
+  #cursor.acc{ background:var(--accent); border-color:var(--accent); }
+  #peek{ position:fixed; top:0; left:0; z-index:100; width:210px; height:150px; border-radius:14px; overflow:hidden;
+    pointer-events:none; opacity:0; transform:translate(-50%,-50%) scale(.85) rotate(-4deg); transition:opacity .4s var(--ease), transform .6s var(--ease);
+    box-shadow:0 30px 70px -24px rgba(0,0,0,.6); border:1px solid var(--glass-line); }
+  #peek.on{ opacity:1; transform:translate(-50%,-50%) scale(1) rotate(-3deg); }
+  @media (hover:hover) and (pointer:fine){ body.cc, body.cc a, body.cc button, body.cc [role=button]{ cursor:none; } }
+  @media (hover:none),(pointer:coarse){ #cursor,#peek{ display:none; } }
+
+  /* ═══════════ CONTROLS ═══════════ */
+  .df,.chip,.rp,.catb{ transition:color .45s var(--ease), background-color .45s var(--ease), border-color .45s var(--ease); }
+  .df{ position:relative; padding:9px 2px; font-size:13.5px; color:var(--muted); white-space:nowrap; font-weight:450; }
+  .df:hover{ color:var(--ink); }
+  .df.on{ color:var(--ink); }
+  .chip,.rp,.catb{ font-size:12.5px; padding:8px 15px; border-radius:999px; border:1px solid var(--line); color:var(--muted); white-space:nowrap; }
+  .chip:hover,.rp:hover,.catb:hover{ border-color:var(--ink); color:var(--ink); }
+  .chip.on,.rp.on,.catb.on{ background:var(--ink); color:var(--bg); border-color:var(--ink); }
+  .chip.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  input[type=range]{ accent-color:var(--accent); }
+
+  /* ═══════════ MARQUEE ═══════════ */
+  .mq{ animation:mq 34s linear infinite; }
+  .mq-wrap:hover .mq{ animation-play-state:paused; }
+  @keyframes mq{ to{ transform:translateX(-50%) } }
+
+  /* ═══════════ MISC ═══════════ */
+  .nb::-webkit-scrollbar{ display:none; }
+  .nb{ scrollbar-width:none; }
+  .sk{ background:linear-gradient(90deg,var(--line) 25%,color-mix(in srgb,var(--line) 40%,transparent) 37%,var(--line) 63%);
+       background-size:400% 100%; animation:sk 1.5s ease infinite; }
+  @keyframes sk{ 0%{background-position:100% 50%} 100%{background-position:0 50%} }
+  :focus-visible{ outline:2px solid var(--accent); outline-offset:3px; border-radius:2px; }
+  .hr-grid{ background-image:linear-gradient(90deg,var(--line) 1px,transparent 1px); background-size:25% 100%; }
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important;
+      transition-duration:.001ms !important; scroll-behavior:auto !important; }
+    .rv,.mask,.img-rev{ opacity:1 !important; transform:none !important; clip-path:none !important; }
+    #cursor,#peek,#loader{ display:none !important; }
+  }
+</style>
+</head>
+    <body class="grain">
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="text-center">
+    <p id="loaderWord" class="display text-[22px] md:text-[26px] font-semibold">EVENTRA</p>
+    <div class="mt-7 h-px w-44 mx-auto overflow-hidden" style="background:var(--line)">
+      <div id="loaderBar"></div>
+    </div>
+    <p class="mt-4 text-[10px] tracking-[.32em] uppercase" style="color:var(--muted)">Finding your city</p>
+  </div>
+</div>
+<noscript><style>#loader{display:none}#nav{transform:none!important}.mask,.rv,.img-rev{opacity:1!important;clip-path:none!important;transform:none!important}</style></noscript>
+
+<!-- CURSOR + PEEK -->
+<div id="cursor" aria-hidden="true"><span>VIEW</span></div>
+<div id="peek" aria-hidden="true"><img id="peekImg" alt="" class="w-full h-full object-cover" /></div>
+<div id="progress" class="fixed top-0 left-0 h-[2px] z-[105]" style="width:0;background:var(--accent)"></div>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<header id="nav" class="fixed top-0 inset-x-0 z-50 border-b border-transparent -translate-y-full"
+        style="transition:transform .7s var(--ease), background-color .5s var(--ease), border-color .5s var(--ease)">
+  <div class="max-w-[1560px] mx-auto px-5 md:px-10">
+    <div class="h-[68px] md:h-[78px] flex items-center justify-between gap-8">
+      <a href="#top" class="flex items-center gap-3 shrink-0" data-cursor="OPEN" data-magnetic>
+        <span class="w-2 h-2 rounded-full" style="background:var(--accent)"></span>
+        <span class="display text-[19px] md:text-[21px] font-semibold tracking-[.18em] leading-none">EVENTRA</span>
+      </a>
+
+      <nav class="hidden lg:flex items-center gap-9 text-[13px] font-medium text-muted">
+        <a href="#discover" class="nav-link hover:text-ink transition-colors duration-500">Explore</a>
+        <a href="#now" class="nav-link hover:text-ink transition-colors duration-500">Events</a>
+        <a href="#map" class="nav-link hover:text-ink transition-colors duration-500">Map</a>
+        <a href="#radar" class="nav-link hover:text-ink transition-colors duration-500">Radar</a>
+        <a href="#organizers" class="nav-link hover:text-ink transition-colors duration-500">About</a>
+      </nav>
+
+      <div class="flex items-center gap-2.5">
+        <button id="themeBtn" class="hidden sm:grid place-items-center w-9 h-9 rounded-full border border-line hover:border-accent transition-colors duration-500" aria-label="Toggle theme">
+          <svg id="iconSun" class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg id="iconMoon" class="hidden w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
+        </button>
+        <a href="#saved" class="hidden md:inline-flex items-center gap-2 text-[13px] font-medium text-muted hover:text-ink transition-colors duration-500" data-cursor="OPEN">
+          <svg class="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.8 8.6a5 5 0 0 0-8.8-3.2A5 5 0 0 0 3.2 8.6c0 5 8.8 11 8.8 11s8.8-6 8.8-11Z"/></svg>
+          Saved
+        </a>
+        <a href="#profile" data-magnetic
+           class="btn btn-ghost hidden md:inline-flex items-center h-9 px-4 rounded-full border border-line text-[12.5px] font-medium" data-cursor="OPEN">
+          <span>Profile</span>
+        </a>
+        <button id="menuBtn" class="lg:hidden grid place-items-center w-9 h-9 rounded-full border border-line" aria-label="Menu">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="mobileMenu" class="lg:hidden hidden glass glass-sh border-t" style="border-color:var(--line)">
+    <div class="px-6 py-7 flex flex-col gap-5 text-[16px]">
+      <a href="#discover" class="mlink">Explore</a>
+      <a href="#now" class="mlink">Events</a>
+      <a href="#map" class="mlink">Map</a>
+      <a href="#radar" class="mlink">Radar</a>
+      <a href="#organizers" class="mlink">About</a>
+      <a href="#saved" class="mlink">Saved</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+    <!-- ═══════════════ HERO ═══════════════ -->
+<section class="relative pt-[128px] md:pt-[180px] pb-14 md:pb-24 overflow-hidden">
+  <div aria-hidden="true" class="absolute inset-0 pointer-events-none">
+    <div id="blobA" class="absolute -top-52 -left-40 w-[48rem] h-[48rem] rounded-full blur-[150px] opacity-[.30]"
+         style="background:radial-gradient(circle,#FF4D2E,transparent 62%)"></div>
+    <div id="blobB" class="absolute top-10 right-[-16rem] w-[44rem] h-[44rem] rounded-full blur-[160px] opacity-[.26]"
+         style="background:radial-gradient(circle,#FFB800,transparent 62%)"></div>
+    <div id="blobC" class="absolute bottom-[-14rem] left-1/3 w-[40rem] h-[40rem] rounded-full blur-[170px] opacity-[.22]"
+         style="background:radial-gradient(circle,#0FB57E,transparent 62%)"></div>
+    <div id="spot" class="absolute inset-0 opacity-0 transition-opacity duration-700"
+         style="background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%), var(--accent-50), transparent 70%)"></div>
+  </div>
+
+  <div class="relative max-w-[1560px] mx-auto px-5 md:px-10">
+    <div class="flex items-center gap-4 mb-8 md:mb-12 mask" data-hero>
+      <span class="h-[2px] w-9 md:w-14 rounded-full" style="background:var(--accent)"></span>
+      <p class="text-[10.5px] md:text-[11px] tracking-[.42em] uppercase text-muted">Your city, tonight</p>
+      <span class="hidden sm:inline-flex items-center gap-2 ml-2 text-[11px] text-muted">
+        <span class="relative flex w-1.5 h-1.5"><span class="ping absolute inset-0 rounded-full" style="background:var(--live)"></span>
+        <span class="relative w-1.5 h-1.5 rounded-full" style="background:var(--live)"></span></span>
+        <span class="tabular-nums"><span data-count="47">0</span> live now</span>
+      </span>
+    </div>
+
+    <h1 class="display font-light leading-[.85] tracking-[-.035em] text-[clamp(3.4rem,12.4vw,11.8rem)]">
+      <span class="block mask" data-hero style="--d:140ms">WHAT&rsquo;S</span>
+      <span class="block mask italic display-soft" data-hero style="--d:300ms">Happening<span style="color:var(--accent)">?</span></span>
+    </h1>
+
+    <div class="mt-10 md:mt-16 grid lg:grid-cols-12 gap-9 lg:gap-14 items-end">
+      <p class="lg:col-span-5 text-[16px] md:text-[19px] leading-relaxed text-muted max-w-md mask" data-hero style="--d:470ms">
+        Find something worth leaving the house for. Concerts, nightlife, theatre, art, food &mdash; curated from what&rsquo;s
+        <em class="italic" style="color:var(--ink)">actually</em> happening around you.
+      </p>
+
+      <div class="lg:col-span-7 mask" data-hero style="--d:600ms">
+        <div id="searchWrap" class="relative">
+          <div id="searchBox" class="glass glass-sh rounded-2xl md:rounded-[20px] flex items-center gap-4 px-4 md:px-6 h-[64px] md:h-[78px]"
+               style="transition:height .7s var(--ease), transform .7s var(--ease), box-shadow .7s var(--ease)">
+            <svg class="w-[18px] h-[18px] shrink-0 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
+            <input id="searchInput" type="text" autocomplete="off" placeholder="Search city, neighborhood or venue"
+                   class="flex-1 bg-transparent outline-none text-[15px] md:text-[17px] placeholder:text-muted/70" />
+            <button class="btn hidden sm:inline-flex items-center gap-2 h-10 px-4 rounded-xl border border-line text-[12.5px] font-medium shrink-0" data-cursor="OPEN" data-magnetic>
+              <span class="inline-flex items-center gap-2">
+                Locate
+                <svg class="w-[13px] h-[13px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="4"/></svg>
+              </span>
+            </button>
+          </div>
+
+          <div id="suggestPanel" class="hidden absolute left-0 right-0 top-[calc(100%+10px)] glass glass-sh rounded-2xl p-2 z-40 max-h-[62vh] overflow-y-auto nb">
+            <div class="p-2">
+              <p class="text-[10px] tracking-[.32em] uppercase text-muted px-3 pt-2 pb-3">Recent</p>
+              <div id="recentList"></div>
+            </div>
+            <div class="h-px mx-4" style="background:var(--line)"></div>
+            <div class="p-2">
+              <p class="text-[10px] tracking-[.32em] uppercase text-muted px-3 pt-2 pb-3">Popular nearby</p>
+              <div id="popularList"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-7 flex items-center gap-7 md:gap-10 overflow-x-auto nb">
+          <span class="hidden sm:block text-[10.5px] tracking-[.42em] uppercase text-muted shrink-0">When</span>
+          <div id="dateFilter" class="relative flex items-center gap-7 md:gap-10 shrink-0">
+            <span id="dfInk" class="absolute bottom-[7px] h-[2px] rounded-full" style="background:var(--accent); left:0; width:0; transition:left .55s var(--ease), width .55s var(--ease)"></span>
+            <button class="df on" data-d="today">Today</button>
+            <button class="df" data-d="weekend">This Weekend</button>
+            <button class="df" data-d="week">This Week</button>
+            <button class="df" data-d="month">This Month</button>
+          </div>
+        </div>
+
+        <div class="mt-10 hidden md:flex items-center gap-3 text-muted">
+          <span class="text-[10px] tracking-[.3em] uppercase">Scroll</span>
+          <span class="relative h-10 w-px overflow-hidden" style="background:var(--line)">
+            <span class="absolute inset-x-0 top-0 h-4" style="background:var(--accent); animation:scrollCue 2.4s var(--ease) infinite"></span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="relative mt-14 md:mt-20 border-y py-4 overflow-hidden mq-wrap" style="border-color:var(--line)">
+    <div class="flex w-max mq">
+      <div class="flex items-center shrink-0" id="mqA"></div>
+      <div class="flex items-center shrink-0" id="mqB" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+    <!-- ═══════════════ HAPPENING NOW ═══════════════ -->
+<section id="now" class="max-w-[1560px] mx-auto px-5 md:px-10 pt-20 md:pt-32">
+  <div class="flex items-end justify-between gap-6 mb-10 md:mb-14">
+    <div class="rv">
+      <div class="flex items-center gap-3.5 mb-5">
+        <span class="h-[2px] w-8 rounded-full" style="background:var(--live)"></span>
+        <p class="text-[10.5px] tracking-[.42em] uppercase text-muted">Happening now</p>
+      </div>
+      <h2 class="display font-light text-[clamp(1.95rem,4.8vw,4.1rem)] leading-[.96] tracking-[-.025em]">
+        Things worth stepping<br class="hidden md:block" /> out for right now.
+      </h2>
+    </div>
+    <a href="#discover" class="group hidden md:inline-flex items-center gap-2.5 text-[13px] font-medium text-muted hover:text-ink transition-colors shrink-0 pb-2" data-cursor="OPEN">
+      <span>See all live</span><span class="arrow">&rarr;</span>
+    </a>
+  </div>
+
+  <div id="nowTrack" class="flex gap-5 md:gap-7 overflow-x-auto nb snap-x snap-mandatory pb-3 -mx-5 px-5 md:-mx-10 md:px-10"></div>
+</section>
+
+<!-- ═══════════════ AROUND YOU — LIST + MAP ═══════════════ -->
+<section id="discover" class="max-w-[1560px] mx-auto px-5 md:px-10 pt-24 md:pt-40">
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-11 md:mb-16 rv">
+    <div>
+      <div class="flex items-center gap-3.5 mb-5">
+        <span class="h-[2px] w-8 rounded-full" style="background:var(--accent)"></span>
+        <p class="text-[10.5px] tracking-[.42em] uppercase text-muted">Around you &middot; <span style="color:var(--ink)" id="cityLabel">Mumbai</span></p>
+      </div>
+      <h2 class="display font-light text-[clamp(2.2rem,5.6vw,4.8rem)] leading-[.94] tracking-[-.03em]">
+        Discover<br class="hidden md:block" /> around you.
+      </h2>
+    </div>
+    <div class="flex items-center gap-2 overflow-x-auto nb pb-1" id="catStrip"></div>
+  </div>
+
+  <div class="grid lg:grid-cols-12 gap-8 lg:gap-10">
+    <div class="lg:col-span-6 xl:col-span-5">
+      <div class="flex items-center justify-between pb-4 border-b mb-1" style="border-color:var(--line)">
+        <p class="text-[11px] tracking-[.22em] uppercase text-muted"><span id="resultCount">00</span> events</p>
+        <button class="group inline-flex items-center gap-2 text-[11.5px] text-muted hover:text-ink transition-colors" data-cursor="OPEN">
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+          Sort &middot; Recommended
+        </button>
+      </div>
+      <div id="eventList"></div>
+    </div>
+
+    <div id="map" class="lg:col-span-6 xl:col-span-7 rv rv-r">
+      <div class="lg:sticky lg:top-[96px]">
+        <div class="relative rounded-[24px] overflow-hidden border glass-sh" style="border-color:var(--line); background:var(--map-base)">
+          <div class="aspect-[4/3] lg:aspect-[16/13] relative">
+            <svg viewBox="0 0 800 620" class="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid slice" aria-label="Event map">
+              <rect width="800" height="620" fill="var(--map-base)"/>
+              <g fill="var(--map-block)">
+                <rect x="40" y="40" width="150" height="110" rx="7"/><rect x="220" y="40" width="190" height="110" rx="7"/>
+                <rect x="440" y="40" width="130" height="110" rx="7"/><rect x="600" y="40" width="160" height="170" rx="7"/>
+                <rect x="40" y="190" width="150" height="150" rx="7"/><rect x="220" y="190" width="190" height="70" rx="7"/>
+                <rect x="220" y="290" width="190" height="150" rx="7"/><rect x="440" y="190" width="130" height="250" rx="7"/>
+                <rect x="40" y="380" width="150" height="190" rx="7"/><rect x="220" y="480" width="350" height="90" rx="7"/>
+                <rect x="600" y="250" width="160" height="190" rx="7"/><rect x="600" y="480" width="160" height="90" rx="7"/>
+              </g>
+              <path d="M-20 430 C 160 400, 300 520, 470 500 C 610 484, 700 560, 830 545 L 830 640 L -20 640 Z" fill="var(--map-water)"/>
+              <g stroke="var(--map-minor)" stroke-width="3" fill="none">
+                <path d="M115 40V570M335 40V570M505 40V490M680 40V570"/>
+                <path d="M40 95H760M40 265H760M40 365H600M40 455H760"/>
+              </g>
+              <g stroke="var(--map-road)" stroke-width="11" fill="none" stroke-linecap="round">
+                <path d="M-20 155H830"/><path d="M-20 320H830"/><path d="M195 -20V640"/><path d="M575 -20V640"/>
+              </g>
+              <g stroke="var(--map-road)" stroke-width="5" fill="none" stroke-linecap="round" opacity=".92">
+                <path d="M40 520H760"/><path d="M420 -20V200"/>
+              </g>
+            </svg>
+
+            <div id="markers" class="absolute inset-0"></div>
+
+            <div class="absolute top-4 right-4 flex flex-col gap-2">
+              <div class="glass glass-sh rounded-2xl overflow-hidden flex flex-col">
+                <button class="w-10 h-10 grid place-items-center hover:bg-accent/10 transition-colors" aria-label="Zoom in">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 5v14M5 12h14"/></svg>
+                </button>
+                <div class="h-px" style="background:var(--line)"></div>
+                <button class="w-10 h-10 grid place-items-center hover:bg-accent/10 transition-colors" aria-label="Zoom out">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14"/></svg>
+                </button>
+              </div>
+              <button class="glass glass-sh w-10 h-10 rounded-2xl grid place-items-center hover:bg-accent/10 transition-colors" aria-label="Recenter">
+                <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              </button>
+            </div>
+
+            <div class="absolute bottom-4 left-4 right-4 flex items-end justify-between gap-4 pointer-events-none">
+              <div class="glass glass-sh rounded-2xl px-4 py-3 pointer-events-auto">
+                <p class="text-[10px] tracking-[.3em] uppercase text-muted mb-1.5">Search area</p>
+                <div class="flex items-center gap-3">
+                  <input type="range" min="1" max="50" value="10" class="w-28 md:w-40" aria-label="Radius" />
+                  <span id="radiusOut" class="text-[12px] font-medium tabular-nums">10 km</span>
+                </div>
+              </div>
+              <div class="glass glass-sh rounded-2xl px-3.5 py-3 pointer-events-auto text-[11px] text-muted">
+                <span class="inline-block w-1.5 h-1.5 rounded-full mr-2 align-middle" style="background:var(--live)"></span><span id="visibleCount">0</span> in view
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+    <!-- ═══════════════ TRENDING ═══════════════ -->
+<section class="max-w-[1560px] mx-auto px-5 md:px-10 pt-24 md:pt-40">
+  <div class="grid lg:grid-cols-12 gap-10 lg:gap-16">
+    <div class="lg:col-span-4 rv">
+      <div class="flex items-center gap-3.5 mb-5">
+        <span class="h-[2px] w-8 rounded-full" style="background:var(--sun)"></span>
+        <p class="text-[10.5px] tracking-[.42em] uppercase text-muted">Trending now</p>
+      </div>
+      <h2 class="display font-light text-[clamp(2.05rem,5.2vw,4.4rem)] leading-[.94] tracking-[-.03em] mb-7">
+        Gaining<br />momentum.
+      </h2>
+      <p class="text-[14.5px] leading-relaxed text-muted max-w-xs">
+        Ranked by saves and recent interest &mdash; not just page views. What your city is quietly deciding on.
+      </p>
+      <div class="mt-10 flex items-end gap-8">
+        <div>
+          <p class="display text-[34px] font-light leading-none tabular-nums"><span data-count="184">0</span>%</p>
+          <p class="text-[11px] tracking-wide text-muted mt-2">Top mover this week</p>
+        </div>
+        <div>
+          <p class="display text-[34px] font-light leading-none tabular-nums"><span data-count="12">0</span>k</p>
+          <p class="text-[11px] tracking-wide text-muted mt-2">Saves, last 24h</p>
+        </div>
+      </div>
+    </div>
+    <div class="lg:col-span-8">
+      <div id="trendList" class="border-t" style="border-color:var(--line)"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CATEGORIES ═══════════════ -->
+<section class="max-w-[1560px] mx-auto px-5 md:px-10 pt-24 md:pt-40">
+  <div class="flex items-end justify-between gap-6 mb-11 md:mb-16 rv">
+    <div>
+      <div class="flex items-center gap-3.5 mb-5">
+        <span class="h-[2px] w-8 rounded-full" style="background:var(--sky)"></span>
+        <p class="text-[10.5px] tracking-[.42em] uppercase text-muted">Discover by category</p>
+      </div>
+      <h2 class="display font-light text-[clamp(2.2rem,5.6vw,4.8rem)] leading-[.94] tracking-[-.03em]">Pick a mood.</h2>
+    </div>
+    <p class="hidden md:block text-[13px] text-muted max-w-[230px] leading-relaxed pb-2">Fourteen ways to spend an evening you&rsquo;ll remember.</p>
+  </div>
+  <div id="catGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5"></div>
+</section>
+
+<!-- ═══════════════ RADAR ═══════════════ -->
+<section id="radar" class="max-w-[1560px] mx-auto px-5 md:px-10 pt-24 md:pt-40">
+  <div class="rounded-[28px] border overflow-hidden relative glass-sh rv rv-s" style="border-color:var(--line); background:var(--surface)">
+    <div class="grid lg:grid-cols-2">
+      <div class="p-8 md:p-14 lg:p-16 flex flex-col justify-center order-2 lg:order-1">
+        <div class="flex items-center gap-3.5 mb-5">
+          <span class="h-[2px] w-8 rounded-full" style="background:var(--live)"></span>
+          <p class="text-[10.5px] tracking-[.42em] uppercase text-muted">Event radar</p>
+        </div>
+        <h2 class="display font-light text-[clamp(2.05rem,4.8vw,3.9rem)] leading-[.96] tracking-[-.03em] mb-6">
+          See what&rsquo;s near,<br /> before you decide.
+        </h2>
+        <p class="text-[15px] leading-relaxed text-muted max-w-md mb-9">
+          Your location sits at the centre. Real events arrange themselves around you by distance and time &mdash; a calmer way to choose a direction.
+        </p>
+        <div class="mb-9">
+          <p class="text-[10.5px] tracking-[.3em] uppercase text-muted mb-4">Radius</p>
+          <div id="radiusPills" class="flex items-center gap-2 flex-wrap">
+            <button class="rp" data-r="1">1 km</button>
+            <button class="rp on" data-r="5">5 km</button>
+            <button class="rp" data-r="10">10 km</button>
+            <button class="rp" data-r="25">25 km</button>
+          </div>
+        </div>
+        <a href="#" class="btn group inline-flex items-center gap-3 h-12 px-7 rounded-xl border border-line text-[13px] font-medium w-fit" data-cursor="OPEN" data-magnetic>
+          <span class="inline-flex items-center gap-3">Open full radar <span class="arrow">&rarr;</span></span>
+        </a>
+      </div>
+
+      <div class="relative min-h-[380px] md:min-h-[540px] overflow-hidden order-1 lg:order-2" style="background:var(--map-base)">
+        <div class="absolute inset-0 grid place-items-center">
+          <div class="relative w-[min(90%,580px)] aspect-square">
+            <svg viewBox="0 0 400 400" class="absolute inset-0 w-full h-full">
+              <defs>
+                <linearGradient id="sw" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stop-color="#0FB57E" stop-opacity="0"/>
+                  <stop offset="100%" stop-color="#0FB57E" stop-opacity=".55"/>
+                </linearGradient>
+              </defs>
+              <g fill="none" stroke="var(--line)" stroke-width="1">
+                <circle class="ring" cx="200" cy="200" r="60"/>
+                <circle class="ring" cx="200" cy="200" r="105" style="animation-delay:.8s"/>
+                <circle class="ring" cx="200" cy="200" r="150" style="animation-delay:1.6s"/>
+                <circle class="ring" cx="200" cy="200" r="192" style="animation-delay:2.4s"/>
+              </g>
+              <g stroke="var(--line)" stroke-width=".6" opacity=".45">
+                <path d="M200 8V392M8 200H392M64 64L336 336M336 64L64 336"/>
+              </g>
+              <g class="sweep" opacity=".55"><path d="M200 200 L200 8 A192 192 0 0 1 336 64 Z" fill="url(#sw)"/></g>
+              <circle cx="200" cy="200" r="5" fill="var(--accent)"/>
+              <circle cx="200" cy="200" r="5" fill="none" stroke="var(--accent)" stroke-width="1.2" opacity=".5">
+                <animate attributeName="r" values="5;28" dur="3.2s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" values=".55;0" dur="3.2s" repeatCount="indefinite"/>
+              </circle>
+            </svg>
+            <div id="radarDots" class="absolute inset-0"></div>
+          </div>
+        </div>
+        <div class="absolute top-5 left-5 glass glass-sh rounded-2xl px-4 py-3">
+          <p class="text-[10px] tracking-[.3em] uppercase text-muted">Centred on</p>
+          <p class="text-[13px] font-medium mt-0.5">Bandra West, Mumbai</p>
+        </div>
+        <div class="absolute bottom-5 right-5 glass glass-sh rounded-2xl px-4 py-3 text-right">
+          <p class="text-[10px] tracking-[.3em] uppercase text-muted">Within radius</p>
+          <p class="display text-[26px] font-light leading-none mt-1.5"><span id="radarCount">12</span> <span class="text-[12px] text-muted font-sans">events</span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+    <!-- ═══════════════ PLAN MY NIGHT ═══════════════ -->
+<section id="plan" class="max-w-[1560px] mx-auto px-5 md:px-10 pt-24 md:pt-40">
+  <div class="mb-11 md:mb-16 rv">
+    <div class="flex items-center gap-3.5 mb-5">
+      <span class="h-[2px] w-8 rounded-full" style="background:var(--accent)"></span>
+      <p class="text-[10.5px] tracking-[.42em] uppercase text-muted">Signature</p>
+    </div>
+    <h2 class="display font-light text-[clamp(2.2rem,5.6vw,4.8rem)] leading-[.94] tracking-[-.03em] mb-6">Plan my night.</h2>
+    <p class="text-[15.5px] text-muted max-w-lg leading-relaxed">Tell us what you&rsquo;re in the mood for. We&rsquo;ll build an evening from events that are genuinely on &mdash; with travel time in between.</p>
+  </div>
+
+  <div class="glass glass-sh rounded-[26px] p-6 md:p-10 grid lg:grid-cols-12 gap-10 rv">
+    <form id="planForm" class="lg:col-span-5 flex flex-col gap-7">
+      <div>
+        <label class="text-[10.5px] tracking-[.3em] uppercase text-muted block mb-3">Location</label>
+        <input value="Mumbai" class="w-full bg-transparent border-b pb-2 text-[16px] outline-none focus:border-accent transition-colors" style="border-color:var(--line)" />
+      </div>
+      <div class="grid grid-cols-2 gap-6">
+        <div>
+          <label class="text-[10.5px] tracking-[.3em] uppercase text-muted block mb-3">From</label>
+          <input value="6:00 PM" class="w-full bg-transparent border-b pb-2 text-[16px] outline-none focus:border-accent transition-colors" style="border-color:var(--line)" />
+        </div>
+        <div>
+          <label class="text-[10.5px] tracking-[.3em] uppercase text-muted block mb-3">Until</label>
+          <input value="1:00 AM" class="w-full bg-transparent border-b pb-2 text-[16px] outline-none focus:border-accent transition-colors" style="border-color:var(--line)" />
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-6">
+        <div>
+          <label class="text-[10.5px] tracking-[.3em] uppercase text-muted block mb-3">Budget</label>
+          <input value="₹3,000" class="w-full bg-transparent border-b pb-2 text-[16px] outline-none focus:border-accent transition-colors" style="border-color:var(--line)" />
+        </div>
+        <div>
+          <label class="text-[10.5px] tracking-[.3em] uppercase text-muted block mb-3">Group</label>
+          <input value="2 people" class="w-full bg-transparent border-b pb-2 text-[16px] outline-none focus:border-accent transition-colors" style="border-color:var(--line)" />
+        </div>
+      </div>
+      <div>
+        <label class="text-[10.5px] tracking-[.3em] uppercase text-muted block mb-3">Interests</label>
+        <div id="interestChips" class="flex flex-wrap gap-2">
+          <button type="button" class="chip on">Music</button>
+          <button type="button" class="chip on">Food</button>
+          <button type="button" class="chip on">Nightlife</button>
+          <button type="button" class="chip">Art</button>
+          <button type="button" class="chip">Theatre</button>
+          <button type="button" class="chip">Markets</button>
+        </div>
+      </div>
+      <button type="submit" class="btn h-12 rounded-xl border border-line text-[13px] font-medium mt-2" data-cursor="OPEN" data-magnetic>
+        <span>Build my evening</span>
+      </button>
+    </form>
+
+    <div class="lg:col-span-7 lg:border-l lg:pl-10" style="border-color:var(--line)">
+      <div class="flex items-center justify-between mb-8">
+        <p class="text-[10.5px] tracking-[.3em] uppercase text-muted">Your evening &middot; Sat 19</p>
+        <span id="planStatus" class="text-[11px] text-muted">Ready</span>
+      </div>
+      <div id="itinerary" class="flex flex-col"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ ORGANIZERS ═══════════════ -->
+<section id="organizers" class="max-w-[1560px] mx-auto px-5 md:px-10 pt-24 md:pt-40 pb-24 md:pb-40">
+  <div class="relative rounded-[28px] overflow-hidden border glass-sh rv rv-s" style="border-color:var(--line)">
+    <div class="grid lg:grid-cols-2">
+      <div class="zoom-parent relative min-h-[320px] lg:min-h-[540px] overflow-hidden">
+        <div class="fallback absolute inset-0"></div>
+        <img src="https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=1400&q=80"
+             alt="Crowd at a live event" loading="lazy" decoding="async"
+             class="ev-img absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'" />
+      </div>
+      <div class="p-8 md:p-14 lg:p-16 flex flex-col justify-center" style="background:var(--surface)">
+        <div class="flex items-center gap-3.5 mb-5">
+          <span class="h-[2px] w-8 rounded-full" style="background:var(--sun)"></span>
+          <p class="text-[10.5px] tracking-[.42em] uppercase text-muted">For organizers</p>
+        </div>
+        <h2 class="display font-light text-[clamp(2.05rem,4.8vw,3.9rem)] leading-[.96] tracking-[-.03em] mb-6">Hosting something?</h2>
+        <p class="text-[15px] leading-relaxed text-muted max-w-md mb-9">
+          Put your event in front of people already looking for something to do. No noise, no boost buttons &mdash; just the right audience, nearby.
+        </p>
+        <div class="flex flex-wrap items-center gap-5">
+          <a href="#submit" class="btn group inline-flex items-center gap-3 h-12 px-7 rounded-xl border border-line text-[13px] font-medium" data-cursor="OPEN" data-magnetic>
+            <span class="inline-flex items-center gap-3">List an event <span class="arrow">&rarr;</span></span>
+          </a>
+          <a href="#" class="u-link text-[13px] font-medium text-muted hover:text-ink transition-colors" data-cursor="OPEN">Partner with us</a>
+        </div>
+        <div class="mt-12 pt-8 border-t grid grid-cols-3 gap-6" style="border-color:var(--line)">
+          <div><p class="display text-[28px] font-light leading-none tabular-nums"><span data-count="2.4">0</span>M</p><p class="text-[11px] text-muted mt-2.5 tracking-wide">Monthly seekers</p></div>
+          <div><p class="display text-[28px] font-light leading-none tabular-nums"><span data-count="120">0</span>+</p><p class="text-[11px] text-muted mt-2.5 tracking-wide">Cities live</p></div>
+          <div><p class="display text-[28px] font-light leading-none tabular-nums"><span data-count="48">0</span>h</p><p class="text-[11px] text-muted mt-2.5 tracking-wide">Review time</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<footer class="border-t" style="border-color:var(--line)">
+  <div class="max-w-[1560px] mx-auto px-5 md:px-10 py-16 md:py-24">
+    <div class="grid md:grid-cols-12 gap-12">
+      <div class="md:col-span-5">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="w-2 h-2 rounded-full" style="background:var(--accent)"></span>
+          <span class="display text-[23px] font-semibold tracking-[.18em]">EVENTRA</span>
+        </div>
+        <p class="text-[14.5px] text-muted max-w-xs leading-relaxed">Discover what&rsquo;s happening around you.</p>
+      </div>
+      <div class="md:col-span-2">
+        <p class="text-[10.5px] tracking-[.3em] uppercase text-muted mb-6">Explore</p>
+        <ul class="flex flex-col gap-3.5 text-[13.5px] text-muted">
+          <li><a href="#discover" class="hover:text-ink transition-colors">Events</a></li>
+          <li><a href="#map" class="hover:text-ink transition-colors">Map</a></li>
+          <li><a href="#radar" class="hover:text-ink transition-colors">Radar</a></li>
+          <li><a href="#organizers" class="hover:text-ink transition-colors">About</a></li>
+        </ul>
+      </div>
+      <div class="md:col-span-3">
+        <p class="text-[10.5px] tracking-[.3em] uppercase text-muted mb-6">For organizers</p>
+        <ul class="flex flex-col gap-3.5 text-[13.5px] text-muted">
+          <li><a href="#submit" class="hover:text-ink transition-colors">List an Event</a></li>
+          <li><a href="#" class="hover:text-ink transition-colors">Partner With Us</a></li>
+          <li><span style="color:var(--ink)">Founder &mdash; Vaibhav Verma</span></li>
+        </ul>
+      </div>
+      <div class="md:col-span-2">
+        <p class="text-[10.5px] tracking-[.3em] uppercase text-muted mb-6">Contact</p>
+        <a href="mailto:hello@eventra.com" class="text-[13.5px] text-muted hover:text-ink transition-colors u-link">hello@eventra.com</a>
+      </div>
+    </div>
+    <div class="mt-16 pt-8 border-t flex flex-col md:flex-row justify-between gap-4 text-[12px] text-muted" style="border-color:var(--line)">
+      <p>&copy; 2026 Eventra. All rights reserved.</p>
+      <p class="tracking-wide">Mumbai &middot; Delhi &middot; London &middot; Paris &middot; New York</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════ MOBILE NAV ═══════════════ -->
+<nav class="lg:hidden fixed bottom-0 inset-x-0 z-50 glass border-t" style="border-color:var(--line); padding-bottom:env(safe-area-inset-bottom)">
+  <div class="grid grid-cols-5 h-[62px] text-[10px] tracking-wide">
+    <a href="#discover" class="flex flex-col items-center justify-center gap-1.5" style="color:var(--accent)">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 5-5 2 2-5 5-2Z"/></svg>Explore</a>
+    <a href="#map" class="flex flex-col items-center justify-center gap-1.5 text-muted">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m9 4 6 2 6-2v14l-6 2-6-2-6 2V6l6-2Z"/><path d="M9 4v14M15 6v14"/></svg>Map</a>
+    <a href="#radar" class="flex flex-col items-center justify-center gap-1.5 text-muted">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="currentColor"/></svg>Radar</a>
+    <a href="#saved" class="flex flex-col items-center justify-center gap-1.5 text-muted">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.8 8.6a5 5 0 0 0-8.8-3.2A5 5 0 0 0 3.2 8.6c0 5 8.8 11 8.8 11s8.8-6 8.8-11Z"/></svg>Saved</a>
+    <a href="#profile" class="flex flex-col items-center justify-center gap-1.5 text-muted">
+      <svg class="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Profile</a>
+  </div>
+</nav>
+<div class="lg:hidden h-[62px]"></div>
+    <style>
+  @keyframes scrollCue{ 0%{transform:translateY(-100%)} 100%{transform:translateY(260%)} }
+  @keyframes itinIn{ from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+  @keyframes riseIn{ from{opacity:0;transform:translateY(26px)} to{opacity:1;transform:none} }
+</style>
+
+<script src="https://unpkg.com/lenis@1.1.18/dist/lenis.min.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════════
+   EVENTRA — motion + interface
+   Listings below are clearly-marked placeholders used to
+   demonstrate the interface ahead of the ingestion layer.
+   ══════════════════════════════════════════════════════════ */
+
+const CAT = {
+  Music:'#FF4D2E', Nightlife:'#7B6CF6', Art:'#0FB57E', Theatre:'#FFB800',
+  Sports:'#2F7BF6', Food:'#FF7A45', Workshops:'#8FB03C', Markets:'#E8963A',
+  Festivals:'#FF4D2E', Technology:'#00A9B5', Business:'#7A7A72', Community:'#12B981',
+  Family:'#FFB020', Culture:'#B06AB3'
+};
+
+const EVENTS = [
+  {t:'Midnight Jazz Session', c:'Music', live:true, date:'Sat 19 · 9:00 PM', v:'Blue Note, Colaba', d:'2.4 km', p:'₹800',
+   img:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1200&q=80', x:30, y:34},
+  {t:'Bandra Night Market', c:'Markets', live:true, date:'Sat 19 · 7:30 PM', v:'Carter Road Promenade', d:'1.1 km', p:'Free',
+   img:'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?auto=format&fit=crop&w=1200&q=80', x:22, y:62},
+  {t:'The Shape of Silence', c:'Art', live:false, date:'Sat 19 · 6:00 PM', v:'Chatterjee & Lal, Colaba', d:'3.8 km', p:'₹250',
+   img:'https://images.unsplash.com/photo-1554907984-15263bfd63bd?auto=format&fit=crop&w=1200&q=80', x:52, y:20},
+  {t:'Rooftop Techno: Open Air', c:'Nightlife', live:true, date:'Sat 19 · 11:00 PM', v:'Bonobo, Khar', d:'4.6 km', p:'₹1,200',
+   img:'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=1200&q=80', x:66, y:48},
+  {t:'A Midsummer Table Read', c:'Theatre', live:false, date:'Sun 20 · 8:00 PM', v:'Prithvi Theatre, Juhu', d:'7.2 km', p:'₹600',
+   img:'https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=1200&q=80', x:78, y:30},
+  {t:'Sunday Slow Brunch', c:'Food', live:false, date:'Sun 20 · 11:00 AM', v:'Kala Ghoda Café', d:'2.9 km', p:'₹900',
+   img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1200&q=80', x:44, y:56},
+  {t:'Ceramics: Beginner Wheel', c:'Workshops', live:false, date:'Sun 20 · 4:00 PM', v:'Dharavi Art Room', d:'5.4 km', p:'₹1,500',
+   img:'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=80', x:60, y:72},
+  {t:'Indie After Dark', c:'Music', live:true, date:'Sat 19 · 10:30 PM', v:'antiSOCIAL, Lower Parel', d:'5.1 km', p:'₹750',
+   img:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80', x:86, y:62}
+];
+
+const CATEGORIES = [
+  {n:'Music', img:'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1000&q=80', big:true},
+  {n:'Nightlife', img:'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=900&q=80'},
+  {n:'Art', img:'https://images.unsplash.com/photo-1554907984-15263bfd63bd?auto=format&fit=crop&w=900&q=80'},
+  {n:'Theatre', img:'https://images.unsplash.com/photo-1503095396549-807759245b35?auto=format&fit=crop&w=900&q=80'},
+  {n:'Sports', img:'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=900&q=80'},
+  {n:'Food', img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80'},
+  {n:'Festivals', img:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=900&q=80'},
+  {n:'Markets', img:'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?auto=format&fit=crop&w=900&q=80'},
+  {n:'Workshops', img:'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=900&q=80'},
+  {n:'Technology', img:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=900&q=80'},
+  {n:'Business', img:'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=80'},
+  {n:'Community', img:'https://images.unsplash.com/photo-1531058020387-3be344556be6?auto=format&fit=crop&w=900&q=80'},
+  {n:'Family', img:'https://images.unsplash.com/photo-1472162072942-cd5147eb3902?auto=format&fit=crop&w=900&q=80'},
+  {n:'Culture', img:'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=900&q=80'}
+];
+
+const TRENDING = [
+  {t:'Rooftop Techno: Open Air', c:'Nightlife', v:'Bonobo, Khar', m:'+184%', img:EVENTS[3].img},
+  {t:'Midnight Jazz Session', c:'Music', v:'Blue Note, Colaba', m:'+142%', img:EVENTS[0].img},
+  {t:'Bandra Night Market', c:'Markets', v:'Carter Road', m:'+97%', img:EVENTS[1].img},
+  {t:'Ceramics: Beginner Wheel', c:'Workshops', v:'Dharavi Art Room', m:'+64%', img:EVENTS[6].img},
+  {t:'Indie After Dark', c:'Music', v:'antiSOCIAL', m:'+51%', img:EVENTS[7].img}
+];
+
+const ITIN = [
+  {time:'6:30 PM', kind:'Art exhibition', title:'The Shape of Silence', v:'Chatterjee & Lal, Colaba', note:'Ends 8:00 PM',
+   img:'https://images.unsplash.com/photo-1554907984-15263bfd63bd?auto=format&fit=crop&w=400&q=80'},
+  {time:'8:00 PM', kind:'Dinner', title:'Kala Ghoda Café', v:'3 min walk from venue', note:'~₹1,400 for two',
+   img:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=400&q=80'},
+  {time:'9:45 PM', kind:'Live music', title:'Midnight Jazz Session', v:'Blue Note, Colaba', note:'Starts 9:00 PM · 22 min drive',
+   img:'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=400&q=80'},
+  {time:'11:45 PM', kind:'Late night', title:'Rooftop Techno: Open Air', v:'Bonobo, Khar', note:'Open till 4:00 AM · 31 min drive',
+   img:'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=400&q=80'}
+];
+
+const RECENT = ['Mumbai','Bandra West, Mumbai','Blue Note, Colaba','Juhu, Mumbai'];
+const POPULAR = ['Colaba','Lower Parel','Khar','Andheri West','Fort'];
+
+const $  = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+const RM = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const FINE = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+function photo(src, alt, cls, delay){
+  return `<div class="relative overflow-hidden ${cls}">
+    <div class="fallback absolute inset-0"></div>
+    <img src="${src}" alt="${alt}" loading="lazy" decoding="async"
+         class="ev-img absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'" />
+  </div>`;
+}
+function liveDot(color){
+  return `<span class="inline-flex items-center gap-2 text-[10px] tracking-[.24em] uppercase">
+    <span class="relative flex w-1.5 h-1.5"><span class="ping absolute inset-0 rounded-full" style="background:${color}"></span>
+    <span class="relative w-1.5 h-1.5 rounded-full" style="background:${color}"></span></span>Live</span>`;
+}
+
+/* ───────── HAPPENING NOW ───────── */
+function renderNow(){
+  $('#nowTrack').innerHTML = EVENTS.map((e,i)=>`
+    <article class="ev-card tilt snap-start shrink-0 w-[278px] md:w-[344px] cursor-pointer" data-cursor="VIEW" data-idx="${i}" style="animation:riseIn .9s var(--ease) ${i*.07}s both">
+      <div class="tilt-in">
+        ${photo(e.img, e.t, 'aspect-[4/5] rounded-[20px] border', 0)}
+        <div class="pt-5">
+          <div class="flex items-center gap-3 mb-3">
+            ${e.live ? liveDot(CAT[e.c]) : ''}
+            <span class="text-[10.5px] tracking-[.2em] uppercase" style="color:${CAT[e.c]}">${e.c}</span>
+          </div>
+          <h3 class="display text-[21px] md:text-[23px] font-normal leading-tight tracking-[-.01em] mb-2">${e.t}</h3>
+          <p class="text-[13px] text-muted">${e.date}</p>
+          <div class="mt-3.5 flex items-center justify-between text-[12.5px] text-muted">
+            <span class="truncate pr-4">${e.v}</span><span class="tabular-nums shrink-0">${e.d}</span>
+          </div>
+        </div>
+      </div>
+    </article>`).join('');
+  $$('#nowTrack .ev-card').forEach(c=>{
+    c.addEventListener('click',()=>select(+c.dataset.idx));
+    c.addEventListener('mouseenter',()=>select(+c.dataset.idx,false));
+  });
+}
+
+/* ───────── CATEGORY STRIP + LIST ───────── */
+let activeCat='All', selected=0;
+function renderStrip(){
+  const cats=['All',...new Set(EVENTS.map(e=>e.c))];
+  $('#catStrip').innerHTML = cats.map(c=>`<button class="catb ${c===activeCat?'on':''}" data-c="${c}">${c}</button>`).join('');
+  $$('#catStrip .catb').forEach(b=>b.addEventListener('click',()=>{
+    activeCat=b.dataset.c; renderStrip(); renderList(); renderMarkers();
+  }));
+}
+
+function renderList(){
+  const rows = EVENTS.map((e,i)=>({e,i})).filter(({e})=>activeCat==='All'||e.c===activeCat);
+  $('#resultCount').textContent = String(rows.length).padStart(2,'0');
+  $('#visibleCount').textContent = rows.length;
+  if(!rows.length){
+    $('#eventList').innerHTML = `<div class="py-20 text-center">
+      <p class="display text-[26px] font-light mb-3">No events found nearby.</p>
+      <p class="text-[13.5px] text-muted">Try expanding your radius or changing the date.</p></div>`;
+    return;
+  }
+  $('#eventList').innerHTML = rows.map(({e,i},k)=>`
+    <article class="ev-card group cursor-pointer py-6 flex gap-5 border-b row-hl" style="border-color:var(--line); animation:riseIn .7s var(--ease) ${k*.05}s both"
+             data-cursor="VIEW" data-idx="${i}">
+      ${photo(e.img, e.t, 'w-[92px] h-[114px] md:w-[108px] md:h-[134px] rounded-[14px] border shrink-0')}
+      <div class="flex-1 min-w-0 flex flex-col justify-between py-0.5">
+        <div>
+          <div class="flex items-center gap-3 mb-3">
+            <span class="text-[10px] tracking-[.2em] uppercase" style="color:${CAT[e.c]||'var(--muted)'}">${e.c}</span>
+            ${e.live?'<span class="text-[10px] tracking-[.2em] uppercase" style="color:var(--live)">· Live</span>':''}
+          </div>
+          <h3 class="display text-[19px] md:text-[22px] font-normal leading-snug tracking-[-.01em] truncate">${e.t}</h3>
+          <p class="text-[13px] text-muted mt-2">${e.date}</p>
+        </div>
+        <div class="flex items-center justify-between text-[12.5px] text-muted mt-3.5">
+          <span class="truncate pr-4">${e.v} &middot; <span class="tabular-nums">${e.d}</span></span>
+          <span class="font-medium shrink-0" style="color:var(--ink)">${e.p}</span>
+        </div>
+      </div>
+      <span class="view-tag hidden md:grid place-items-center self-center shrink-0 w-11 h-11 rounded-full border text-[9.5px] tracking-[.18em]" style="border-color:var(--line)">VIEW</span>
+    </article>`).join('');
+  $$('#eventList .ev-card').forEach(c=>{
+    c.addEventListener('click',()=>select(+c.dataset.idx));
+    c.addEventListener('mouseenter',()=>select(+c.dataset.idx,false));
+  });
+}
+
+/* ───────── MAP MARKERS ───────── */
+function renderMarkers(){
+  const rows = EVENTS.map((e,i)=>({e,i})).filter(({e})=>activeCat==='All'||e.c===activeCat);
+  $('#markers').innerHTML = rows.map(({e,i})=>`
+    <div class="marker absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer ${i===selected?'on':''}" data-idx="${i}"
+         style="left:${e.x}%; top:${e.y}%; --pin:${CAT[e.c]||'#FF4D2E'}" data-cursor="VIEW" role="button" tabindex="0" aria-label="${e.t}">
+      ${e.live?`<span class="ping absolute inset-0 rounded-full" style="background:${CAT[e.c]}"></span>`:''}
+      <span class="pin relative block"></span>
+      <span class="tag">${e.t} <span style="color:var(--muted)">· ${e.d}</span></span>
+    </div>`).join('');
+  $$('#markers .marker').forEach(m=>{
+    const i=+m.dataset.idx;
+    m.addEventListener('click',()=>select(i));
+    m.addEventListener('mouseenter',()=>select(i,false));
+    m.addEventListener('keydown',ev=>{ if(ev.key==='Enter') select(i); });
+  });
+}
+
+function select(i, scroll=true){
+  selected=i;
+  $$('#markers .marker').forEach(m=>m.classList.toggle('on', +m.dataset.idx===i));
+  const card = $(`#eventList .ev-card[data-idx="${i}"]`);
+  if(card && scroll) card.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+/* ───────── TRENDING (+ image peek) ───────── */
+function renderTrend(){
+  $('#trendList').innerHTML = TRENDING.map((e,i)=>`
+    <a href="#" class="trend-row group flex items-center gap-5 md:gap-8 py-6 border-b row-hl"
+       style="border-color:var(--line)" data-cursor="VIEW" data-peek="${e.img}">
+      <span class="display text-[13px] tracking-widest text-muted w-7 shrink-0 tabular-nums">${String(i+1).padStart(2,'0')}</span>
+      ${photo(e.img, e.t, 'hidden sm:block w-[76px] h-[76px] rounded-[12px] shrink-0')}
+      <div class="flex-1 min-w-0">
+        <span class="text-[10px] tracking-[.2em] uppercase" style="color:${CAT[e.c]}">${e.c}</span>
+        <h3 class="display text-[19px] md:text-[25px] font-normal leading-tight truncate mt-1.5 transition-all duration-500 group-hover:italic">${e.t}</h3>
+        <p class="text-[12.5px] text-muted mt-1.5 truncate">${e.v}</p>
+      </div>
+      <span class="hidden md:inline-flex items-center gap-2 text-[12px] font-medium shrink-0 px-3 py-1.5 rounded-full" style="color:var(--live); background:color-mix(in srgb, var(--live) 12%, transparent)">${e.m}</span>
+      <span class="arrow text-[16px] text-muted group-hover:text-ink transition-colors shrink-0">&rarr;</span>
+    </a>`).join('');
+}
+
+/* ───────── CATEGORY GRID ───────── */
+function renderCatGrid(){
+  $('#catGrid').innerHTML = CATEGORIES.map((c,i)=>`
+    <a href="#discover" class="group relative overflow-hidden rounded-[18px] border img-rev ${i===0?'md:col-span-2 md:row-span-2':''}" style="border-color:var(--line)" data-cursor="EXPLORE">
+      <div class="relative ${i===0?'aspect-square md:aspect-[4/5]':'aspect-[4/5]'}">
+        <div class="fallback absolute inset-0"></div>
+        <img src="${c.img}" alt="${c.n} events" loading="lazy" decoding="async"
+             class="ev-img absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'" />
+        <div class="scrim absolute inset-0"></div>
+        <span class="absolute top-4 left-4 w-2 h-2 rounded-full" style="background:${CAT[c.n]||'#fff'}"></span>
+        <div class="absolute inset-x-0 bottom-0 p-4 md:p-5 flex items-end justify-between">
+          <span class="text-white display ${i===0?'text-[25px] md:text-[36px]':'text-[17px] md:text-[19px]'} font-normal leading-none tracking-[-.015em]">${c.n}</span>
+          <span class="text-[9.5px] tracking-[.22em] uppercase text-white/75 opacity-0 group-hover:opacity-100 transition-opacity duration-500">Explore</span>
+        </div>
+      </div>
+    </a>`).join('');
+}
+
+/* ───────── MARQUEE ───────── */
+function renderMarquee(){
+  const items=['Jazz tonight in Colaba','47 events within 5 km','Bandra night market is live','Weekend theatre in Juhu','12 free events near you','Indie gigs trending in Lower Parel'];
+  const html=items.map(t=>`<span class="px-7 text-[11px] tracking-[.26em] uppercase text-muted whitespace-nowrap flex items-center gap-7">${t}
+    <span class="w-1.5 h-1.5 rounded-full" style="background:var(--accent)"></span></span>`).join('');
+  $('#mqA').innerHTML=html; $('#mqB').innerHTML=html;
+}
+
+/* ───────── RADAR ───────── */
+function renderRadar(r){
+  const pts=[{a:18,d:.42,c:'Music'},{a:96,d:.68,c:'Art'},{a:154,d:.38,c:'Food'},{a:212,d:.8,c:'Nightlife'},
+             {a:268,d:.55,c:'Theatre'},{a:322,d:.9,c:'Markets'},{a:58,d:.92,c:'Workshops'},{a:132,d:.86,c:'Sports'}];
+  const shown = pts.slice(0, r<=1?3 : r<=5?5 : r<=10?7 : 8);
+  $('#radarDots').innerHTML = shown.map((p,i)=>{
+    const rad=p.a*Math.PI/180;
+    const x=50+Math.cos(rad)*(p.d*40), y=50+Math.sin(rad)*(p.d*40);
+    return `<span class="ddot absolute w-2.5 h-2.5 rounded-full -translate-x-1/2 -translate-y-1/2"
+      style="left:${x}%; top:${y}%; background:${CAT[p.c]}; box-shadow:0 0 0 5px color-mix(in srgb, ${CAT[p.c]} 20%, transparent); animation-delay:${i*.07}s"></span>`;
+  }).join('');
+  $('#radarCount').textContent = shown.length*2+2;
+}
+
+/* ───────── SEARCH SUGGESTIONS ───────── */
+function srow(label, sub){
+  return `<button class="w-full text-left px-3 py-3 rounded-xl hover:bg-accent/10 transition-colors flex items-center gap-3.5 group">
+    <svg class="w-4 h-4 text-muted shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 5-5 2 2-5 5-2Z"/></svg>
+    <span class="flex-1 min-w-0">
+      <span class="block text-[14px] truncate">${label}</span>
+      <span class="block text-[11.5px] text-muted truncate">${sub}</span>
+    </span>
+    <span class="text-[10px] tracking-[.18em] uppercase opacity-0 group-hover:opacity-100 transition-opacity" style="color:var(--accent)">Go</span>
+  </button>`;
+}
+function renderSuggest(){
+  $('#recentList').innerHTML = RECENT.map(r=>srow(r,'Recent search')).join('');
+  $('#popularList').innerHTML = POPULAR.map(r=>srow(r+', Mumbai','Neighborhood')).join('');
+}
+
+/* ───────── ITINERARY ───────── */
+function renderItinerary(animate){
+  $('#itinerary').innerHTML = ITIN.map((s,i)=>`
+    <div class="flex gap-5 md:gap-6 ${i?'border-t pt-6 mt-6':''}" style="border-color:var(--line); ${animate?`animation:itinIn .8s var(--ease) ${i*.13}s both`:''}">
+      <div class="w-[64px] md:w-[80px] shrink-0">
+        <p class="text-[12.5px] font-medium tabular-nums">${s.time}</p>
+        <p class="text-[9.5px] tracking-[.16em] uppercase text-muted mt-2 leading-snug">${s.kind}</p>
+      </div>
+      ${photo(s.img, s.title, 'w-[58px] h-[58px] rounded-[12px] border shrink-0')}
+      <div class="flex-1 min-w-0 pt-0.5">
+        <h4 class="display text-[18px] md:text-[21px] font-normal leading-tight">${s.title}</h4>
+        <p class="text-[12.5px] text-muted mt-2">${s.v}</p>
+        <p class="text-[11.5px] mt-1.5 text-muted/80">${s.note}</p>
+      </div>
+    </div>`).join('');
+}
+
+/* ══════════════ ENGINE ══════════════ */
+document.addEventListener('DOMContentLoaded', ()=>{
+
+  /* render */
+  renderNow(); renderStrip(); renderList(); renderMarkers();
+  renderTrend(); renderCatGrid(); renderMarquee(); renderSuggest(); renderItinerary(false); renderRadar(5);
+
+  /* ── hero intro (choreographed after the curtain) ── */
+  const heroEls=$$('[data-hero]');
+  const playHero=()=>heroEls.forEach(el=>el.classList.add('in'));
+
+  /* ── loader ── */
+  const loader=$('#loader');
+  if(RM || !loader){
+    if(loader) loader.remove();
+    $('#nav').style.transform='translateY(0)';
+    playHero();
+  }
+  else{
+    document.body.classList.add('locked');
+    requestAnimationFrame(()=>{ $('#loaderBar').style.width='100%'; });
+    setTimeout(()=>{
+      loader.classList.add('done');
+      document.body.classList.remove('locked');
+      $('#nav').style.transform='translateY(0)';
+      playHero();
+      setTimeout(()=>loader.remove(), 800);
+    }, 950);
+  }
+
+  /* ── smooth scroll (Lenis) ── */
+  let lenis=null;
+  if(window.Lenis && !RM){
+    lenis=new Lenis({ duration:1.05, smoothWheel:true, wheelMultiplier:1, touchMultiplier:1.6,
+      easing:t=>Math.min(1,1.001-Math.pow(2,-10*t)) });
+    const raf=t=>{ lenis.raf(t); requestAnimationFrame(raf); };
+    requestAnimationFrame(raf);
+  }
+  const goTo = (target)=>{
+    const el = typeof target==='string' ? $(target) : target;
+    if(!el) return;
+    if(lenis) lenis.scrollTo(el, {offset:-70, duration:1.1});
+    else el.scrollIntoView({behavior:RM?'auto':'smooth', block:'start'});
+  };
+  $$('a[href^="#"]').forEach(a=>a.addEventListener('click', e=>{
+    const href=a.getAttribute('href');
+    if(href.length>1 && $(href)){ e.preventDefault(); goTo(href); $('#mobileMenu').classList.add('hidden'); }
+  }));
+
+  /* ── clear entry animations so hover transforms keep working ── */
+  document.addEventListener('animationend', e=>{
+    const n=e.animationName;
+    if(n==='riseIn' || n==='itinIn'){ e.target.style.animation='none'; }
+  }, true);
+
+  /* ── reveal on scroll ── */
+  const revealEls = $$('.rv, .mask, .img-rev').filter(el=>!el.hasAttribute('data-hero'));
+  if(!('IntersectionObserver' in window)){ revealEls.forEach(el=>el.classList.add('in')); }
+  else{
+    const io=new IntersectionObserver((ents)=>{
+      ents.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, {threshold:.1, rootMargin:'0px 0px -6% 0px'});
+    revealEls.forEach(el=>io.observe(el));
+  }
+  // stagger direct children of any [data-stagger]
+  $$('[data-stagger]').forEach(p=>{
+    Array.from(p.children).forEach((c,i)=>{ c.style.setProperty('--d', (i*80)+'ms'); });
+  });
+
+  /* ── animated counters ── */
+  const counters=$$('[data-count]');
+  const cio=new IntersectionObserver((ents)=>{
+    ents.forEach(en=>{
+      if(!en.isIntersecting) return;
+      const el=en.target; cio.unobserve(el);
+      const target=parseFloat(el.dataset.count);
+      const dec=(el.dataset.count.split('.')[1]||'').length;
+      const dur=1400, t0=performance.now();
+      const step=(now)=>{
+        const p=Math.min(1,(now-t0)/dur);
+        const e=1-Math.pow(1-p,3);
+        el.textContent=(target*e).toFixed(dec);
+        if(p<1) requestAnimationFrame(step); else el.textContent=target.toFixed(dec);
+      };
+      if(RM){ el.textContent=target.toFixed(dec); } else requestAnimationFrame(step);
+    });
+  }, {threshold:.6});
+  counters.forEach(c=>cio.observe(c));
+
+  /* ── nav + progress + parallax ── */
+  const nav=$('#nav');
+  let lastY=window.scrollY;
+  const blobs=[['#blobA',.10],['#blobB',-.07],['#blobC',.05]];
+  function onScroll(){
+    const y=window.scrollY;
+    if(y>26){ nav.classList.add('glass','glass-sh'); nav.style.borderColor='var(--line)'; }
+    else{ nav.classList.remove('glass','glass-sh'); nav.style.borderColor='transparent'; }
+    if(!RM){
+      if(y>lastY && y>320) nav.style.transform='translateY(-105%)';
+      else nav.style.transform='translateY(0)';
+    }
+    lastY=y;
+    const h=document.documentElement.scrollHeight-window.innerHeight;
+    $('#progress').style.width=(h>0?(y/h)*100:0)+'%';
+    if(!RM){ blobs.forEach(([id,f])=>{ const el=$(id); if(el) el.style.transform=`translate3d(0,${y*f}px,0)`; }); }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  /* ── spotlight follows pointer in hero ── */
+  const heroSection=$('section');
+  if(FINE && !RM && heroSection){
+    heroSection.addEventListener('mousemove', e=>{
+      const r=heroSection.getBoundingClientRect();
+      const sp=$('#spot');
+      sp.style.setProperty('--mx', (e.clientX-r.left)+'px');
+      sp.style.setProperty('--my', (e.clientY-r.top)+'px');
+      sp.style.opacity='1';
+    });
+    heroSection.addEventListener('mouseleave', ()=>$('#spot').style.opacity='0');
+  }
+
+  /* ── theme ── */
+  const root=document.documentElement;
+  const readTheme=()=>{ try{ return localStorage.getItem('eventra-theme'); }catch(_){ return null; } };
+  const setTheme=(dark)=>{
+    root.classList.toggle('dark', dark);
+    $('#iconSun').classList.toggle('hidden', dark);
+    $('#iconMoon').classList.toggle('hidden', !dark);
+    try{ localStorage.setItem('eventra-theme', dark?'dark':'light'); }catch(_){}
+  };
+  setTheme(readTheme()==='dark');
+  $('#themeBtn').addEventListener('click',()=>setTheme(!root.classList.contains('dark')));
+
+  /* ── date filter ink ── */
+  const dfInk=$('#dfInk');
+  function moveInk(btn){
+    dfInk.style.left=btn.offsetLeft+'px';
+    dfInk.style.width=btn.offsetWidth+'px';
+  }
+  $$('#dateFilter .df').forEach(b=>b.addEventListener('click',()=>{
+    $$('#dateFilter .df').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); moveInk(b);
+    $('#planStatus').textContent='Updating…';
+    setTimeout(()=>$('#planStatus').textContent='Ready', 620);
+  }));
+  setTimeout(()=>moveInk($('#dateFilter .df.on')), 120);
+  window.addEventListener('resize', ()=>{ const on=$('#dateFilter .df.on'); if(on) moveInk(on); });
+
+  /* ── radar radius ── */
+  $$('#radiusPills .rp').forEach(b=>b.addEventListener('click',()=>{
+    $$('#radiusPills .rp').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); renderRadar(+b.dataset.r);
+  }));
+
+  /* ── map radius slider ── */
+  const rs=$('input[type=range]');
+  if(rs) rs.addEventListener('input',()=>{ $('#radiusOut').textContent=rs.value+' km'; });
+
+  /* ── planner ── */
+  $$('#interestChips .chip').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('on')));
+  $('#planForm').addEventListener('submit', e=>{
+    e.preventDefault();
+    $('#planStatus').textContent='Building…';
+    $('#itinerary').style.opacity='.25';
+    setTimeout(()=>{ renderItinerary(true); $('#itinerary').style.opacity='1'; $('#planStatus').textContent='4 stops · ₹2,450 est.'; }, 720);
+  });
+
+  /* ── search ── */
+  const input=$('#searchInput'), panel=$('#suggestPanel'), box=$('#searchBox');
+  input.addEventListener('focus',()=>{
+    panel.classList.remove('hidden');
+    box.style.height = window.innerWidth<768 ? '70px' : '86px';
+    box.style.boxShadow='0 30px 80px -30px var(--shadow)';
+  });
+  input.addEventListener('blur',()=>setTimeout(()=>{
+    panel.classList.add('hidden'); box.style.height=''; box.style.boxShadow='';
+  },170));
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ panel.classList.add('hidden'); input.blur(); }});
+  $$('#suggestPanel button').forEach(b=>b.addEventListener('mousedown',()=>{
+    input.value=b.querySelector('span span').textContent;
+  }));
+  $('#menuBtn').addEventListener('click',()=>$('#mobileMenu').classList.toggle('hidden'));
+  $$('.mlink').forEach(a=>a.addEventListener('click',()=>$('#mobileMenu').classList.add('hidden')));
+
+  /* ── cursor, peek, magnetic, tilt ── */
+  if(FINE && !RM){
+    document.body.classList.add('cc');
+    const cur=$('#cursor'), label=cur.querySelector('span'), peek=$('#peek'), peekImg=$('#peekImg');
+    let x=innerWidth/2,y=innerHeight/2,cx=x,cy=y, px=x,py=y, hasPeek=false;
+    window.addEventListener('mousemove',e=>{ x=e.clientX; y=e.clientY; });
+    (function loop(){
+      cx+=(x-cx)*.2; cy+=(y-cy)*.2;
+      cur.style.left=cx+'px'; cur.style.top=cy+'px';
+      px+=(x-px)*.12; py+=(y-py)*.12;
+      if(hasPeek){ peek.style.left=px+'px'; peek.style.top=py+'px'; }
+      requestAnimationFrame(loop);
+    })();
+    document.addEventListener('mouseover',e=>{
+      const t=e.target.closest('[data-cursor]');
+      if(t){ label.textContent=t.dataset.cursor||'VIEW'; cur.classList.add('big'); }
+      else cur.classList.remove('big','acc');
+      const p=e.target.closest('[data-peek]');
+      if(p){ hasPeek=true; peekImg.src=p.dataset.peek; peek.classList.add('on'); cur.classList.remove('big'); }
+      else { hasPeek=false; peek.classList.remove('on'); }
+    });
+    document.addEventListener('mouseleave',()=>{ cur.style.opacity='0'; peek.classList.remove('on'); });
+    document.addEventListener('mouseenter',()=>{ cur.style.opacity='1'; });
+
+    /* magnetic buttons */
+    $$('[data-magnetic]').forEach(el=>{
+      el.addEventListener('mousemove',e=>{
+        const r=el.getBoundingClientRect();
+        const mx=(e.clientX-r.left-r.width/2)/r.width;
+        const my=(e.clientY-r.top-r.height/2)/r.height;
+        el.style.transform=`translate(${mx*7}px, ${my*6}px)`;
+      });
+      el.addEventListener('mouseleave',()=>{ el.style.transform=''; });
+    });
+
+    /* card tilt */
+    $$('.tilt').forEach(el=>{
+      const inner=el.querySelector('.tilt-in')||el;
+      el.addEventListener('mousemove',e=>{
+        const r=el.getBoundingClientRect();
+        const mx=(e.clientX-r.left)/r.width-.5;
+        const my=(e.clientY-r.top)/r.height-.5;
+        inner.style.transform=`rotateY(${mx*5}deg) rotateX(${-my*5}deg) translateZ(8px)`;
+      });
+      el.addEventListener('mouseleave',()=>{ inner.style.transform=''; });
+    });
+  }
+});
+</script>
+</body>
+</html>
