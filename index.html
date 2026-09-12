@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><base href="https://d16ilfvy4mv02r.cloudfront.net/workspaces/G2iQN4SbrwlnwhE7fWP8BHnYbAccTcdI/2fd274cd-a96c-45a0-b4e3-e68a3bc95857/files/">
+<head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>EVENTRA — Discover what's happening around you.</title>
@@ -86,9 +86,15 @@ tailwind.config = {
   }
 
   *{ -webkit-tap-highlight-color:transparent; }
-  html{ scroll-behavior:smooth; }
+  /* NOTE: keep 'auto' — a CSS smooth-scroll here fights Lenis and is the classic
+     cause of rubber-banding / laggy scrolling. Anchor easing is handled in JS. */
+  html{ scroll-behavior:auto; }
   body{
-    background:var(--bg); color:var(--ink);
+    /* grain is a plain tiled background — NOT a fixed full-screen blend layer,
+       which would force the entire page into one composited blend group. */
+    background-color:var(--bg); color:var(--ink);
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='.05'/></svg>");
+    background-repeat:repeat;
     font-family:Inter,ui-sans-serif,system-ui,sans-serif;
     font-feature-settings:"cv11","ss01";
     -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
@@ -100,13 +106,7 @@ tailwind.config = {
   .display{ font-family:Fraunces,ui-serif,Georgia,serif; font-variation-settings:"SOFT" 0,"WONK" 1; }
   .display-soft{ font-family:Fraunces,ui-serif,Georgia,serif; font-variation-settings:"SOFT" 70,"WONK" 0; }
 
-  /* ═══════════ FILM GRAIN ═══════════ */
-  .grain::after{
-    content:""; position:fixed; inset:-140px; pointer-events:none; z-index:78; opacity:.05;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/></filter><rect width='200' height='200' filter='url(%23n)'/></svg>");
-    mix-blend-mode:multiply;
-  }
-  .dark .grain::after{ mix-blend-mode:screen; opacity:.04; }
+  /* (grain now lives on the body background above — no blend layer) */
 
   /* ═══════════ LOADER ═══════════ */
   #loader{ position:fixed; inset:0; z-index:120; background:var(--bg); display:grid; place-items:center;
@@ -118,22 +118,27 @@ tailwind.config = {
   /* ═══════════ GLASS ═══════════ */
   .glass{
     background:var(--glass);
-    -webkit-backdrop-filter:blur(24px) saturate(1.6);
-    backdrop-filter:blur(24px) saturate(1.6);
+    /* kept deliberately light: a large backdrop-filter re-samples every frame
+       underneath it, so radius/saturation are the main scroll-cost lever. */
+    -webkit-backdrop-filter:blur(12px) saturate(1.25);
+    backdrop-filter:blur(12px) saturate(1.25);
     border:1px solid var(--glass-line);
   }
+  /* deeper frost is affordable on surfaces that sit still (search, planner, forms);
+     the fixed navbar + bottom bar stay on the lighter .glass above. */
+  .glass-strong{ -webkit-backdrop-filter:blur(22px) saturate(1.5); backdrop-filter:blur(22px) saturate(1.5); }
   .glass-sh{ box-shadow:0 1px 0 rgba(255,255,255,.55) inset, 0 22px 70px -26px var(--shadow); }
   .dark .glass-sh{ box-shadow:0 1px 0 rgba(255,255,255,.05) inset, 0 28px 80px -30px rgba(0,0,0,.75); }
 
   /* ═══════════ REVEAL SYSTEM ═══════════ */
-  .rv{ opacity:0; transform:translate3d(0,30px,0); will-change:transform,opacity;
+  .rv{ opacity:0; transform:translate3d(0,30px,0);
        transition:opacity .95s var(--ease), transform 1.05s var(--ease); transition-delay:var(--d,0ms); }
   .rv.in{ opacity:1; transform:none; }
   .rv-l{ transform:translate3d(-28px,0,0); }
   .rv-r{ transform:translate3d(28px,0,0); }
   .rv-s{ transform:scale(.965); }
 
-  .mask{ clip-path:inset(0 0 108% 0); transform:translate3d(0,.14em,0); will-change:clip-path,transform;
+  .mask{ clip-path:inset(0 0 108% 0); transform:translate3d(0,.14em,0);
          transition:clip-path 1.15s var(--ease), transform 1.15s var(--ease); transition-delay:var(--d,0ms); }
   .mask.in{ clip-path:inset(0 0 -22% 0); transform:none; }
 
@@ -167,11 +172,12 @@ tailwind.config = {
 
   .arrow{ transition:transform .55s var(--ease); }
   .group:hover .arrow{ transform:translateX(5px); }
+  .group:hover .arrow-up{ transform:translateY(-4px); }
 
   /* ═══════════ CARDS ═══════════ */
   .ev-card{ transition:transform .7s var(--ease); }
   .ev-card:hover{ transform:translateY(-5px); }
-  .ev-img{ transition:transform 1.3s var(--ease), filter 1s ease; }
+  .ev-img{ transition:transform 1.3s var(--ease); }
   .ev-card:hover .ev-img, .zoom-parent:hover .ev-img{ transform:scale(1.055); }
   .view-tag{ opacity:0; transform:translateY(8px) scale(.9); transition:opacity .5s var(--ease), transform .6s var(--ease); }
   .ev-card:hover .view-tag{ opacity:1; transform:none; }
@@ -209,7 +215,8 @@ tailwind.config = {
 
   /* ═══════════ CURSOR + PEEK ═══════════ */
   #cursor{ position:fixed; top:0; left:0; z-index:110; pointer-events:none; width:9px; height:9px; border-radius:999px;
-    background:var(--ink); transform:translate(-50%,-50%); display:grid; place-items:center; border:1px solid transparent;
+    background:var(--ink); transform:translate3d(0,0,0) translate(-50%,-50%); will-change:transform;
+    display:grid; place-items:center; border:1px solid transparent;
     transition:width .45s var(--ease), height .45s var(--ease), background-color .4s var(--ease),
                border-color .4s var(--ease), opacity .3s var(--ease); }
   #cursor span{ font-size:9px; letter-spacing:.24em; text-transform:uppercase; font-weight:500; color:var(--ink);
@@ -217,10 +224,12 @@ tailwind.config = {
   #cursor.big{ width:92px; height:92px; background:var(--glass); -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); border-color:var(--glass-line); }
   #cursor.big span{ opacity:1; }
   #cursor.acc{ background:var(--accent); border-color:var(--accent); }
-  #peek{ position:fixed; top:0; left:0; z-index:100; width:210px; height:150px; border-radius:14px; overflow:hidden;
-    pointer-events:none; opacity:0; transform:translate(-50%,-50%) scale(.85) rotate(-4deg); transition:opacity .4s var(--ease), transform .6s var(--ease);
-    box-shadow:0 30px 70px -24px rgba(0,0,0,.6); border:1px solid var(--glass-line); }
-  #peek.on{ opacity:1; transform:translate(-50%,-50%) scale(1) rotate(-3deg); }
+  /* outer = position only (written per frame) · inner = scale/rotate (transitioned) */
+  #peek{ position:fixed; top:0; left:0; z-index:100; width:210px; height:150px; pointer-events:none; will-change:transform; }
+  #peek .peek-in{ position:absolute; inset:0; border-radius:14px; overflow:hidden; border:1px solid var(--glass-line);
+    box-shadow:0 30px 70px -24px rgba(0,0,0,.6); opacity:0; transform:scale(.85) rotate(-4deg);
+    transition:opacity .4s var(--ease), transform .6s var(--ease); }
+  #peek.on .peek-in{ opacity:1; transform:scale(1) rotate(-3deg); }
   @media (hover:hover) and (pointer:fine){ body.cc, body.cc a, body.cc button, body.cc [role=button]{ cursor:none; } }
   @media (hover:none),(pointer:coarse){ #cursor,#peek{ display:none; } }
 
@@ -257,7 +266,7 @@ tailwind.config = {
   }
 </style>
 </head>
-    <body class="grain">
+    <body>
 
 <!-- LOADER -->
 <div id="loader">
@@ -273,8 +282,9 @@ tailwind.config = {
 
 <!-- CURSOR + PEEK -->
 <div id="cursor" aria-hidden="true"><span>VIEW</span></div>
-<div id="peek" aria-hidden="true"><img id="peekImg" alt="" class="w-full h-full object-cover" /></div>
-<div id="progress" class="fixed top-0 left-0 h-[2px] z-[105]" style="width:0;background:var(--accent)"></div>
+<div id="peek" aria-hidden="true"><div class="peek-in"><img id="peekImg" alt="" class="w-full h-full object-cover" /></div></div>
+<div id="progress" class="fixed top-0 left-0 right-0 h-[2px] z-[105]"
+     style="background:var(--accent); transform:scaleX(0); transform-origin:0 50%; will-change:transform"></div>
 
 <!-- ═══════════════ NAV ═══════════════ -->
 <header id="nav" class="fixed top-0 inset-x-0 z-50 border-b border-transparent -translate-y-full"
@@ -329,12 +339,14 @@ tailwind.config = {
     <!-- ═══════════════ HERO ═══════════════ -->
 <section class="relative pt-[128px] md:pt-[180px] pb-14 md:pb-24 overflow-hidden">
   <div aria-hidden="true" class="absolute inset-0 pointer-events-none">
-    <div id="blobA" class="absolute -top-52 -left-40 w-[48rem] h-[48rem] rounded-full blur-[150px] opacity-[.30]"
-         style="background:radial-gradient(circle,#FF4D2E,transparent 62%)"></div>
-    <div id="blobB" class="absolute top-10 right-[-16rem] w-[44rem] h-[44rem] rounded-full blur-[160px] opacity-[.26]"
-         style="background:radial-gradient(circle,#FFB800,transparent 62%)"></div>
-    <div id="blobC" class="absolute bottom-[-14rem] left-1/3 w-[40rem] h-[40rem] rounded-full blur-[170px] opacity-[.22]"
-         style="background:radial-gradient(circle,#0FB57E,transparent 62%)"></div>
+    <!-- soft falloff built into the gradient itself: no filter:blur() needed,
+         which means these paint once instead of being re-blurred every frame. -->
+    <div id="blobA" class="absolute -top-52 -left-40 w-[48rem] h-[48rem] rounded-full"
+         style="background:radial-gradient(circle, rgba(255,77,46,.30) 0%, rgba(255,77,46,.12) 44%, rgba(255,77,46,0) 74%)"></div>
+    <div id="blobB" class="absolute top-10 right-[-16rem] w-[44rem] h-[44rem] rounded-full"
+         style="background:radial-gradient(circle, rgba(255,184,0,.26) 0%, rgba(255,184,0,.10) 44%, rgba(255,184,0,0) 74%)"></div>
+    <div id="blobC" class="absolute bottom-[-14rem] left-1/3 w-[40rem] h-[40rem] rounded-full"
+         style="background:radial-gradient(circle, rgba(15,181,126,.22) 0%, rgba(15,181,126,.09) 44%, rgba(15,181,126,0) 74%)"></div>
     <div id="spot" class="absolute inset-0 opacity-0 transition-opacity duration-700"
          style="background:radial-gradient(340px circle at var(--mx,50%) var(--my,50%), var(--accent-50), transparent 70%)"></div>
   </div>
@@ -363,7 +375,7 @@ tailwind.config = {
 
       <div class="lg:col-span-7 mask" data-hero style="--d:600ms">
         <div id="searchWrap" class="relative">
-          <div id="searchBox" class="glass glass-sh rounded-2xl md:rounded-[20px] flex items-center gap-4 px-4 md:px-6 h-[64px] md:h-[78px]"
+          <div id="searchBox" class="glass glass-strong glass-sh rounded-2xl md:rounded-[20px] flex items-center gap-4 px-4 md:px-6 h-[64px] md:h-[78px]"
                style="transition:height .7s var(--ease), transform .7s var(--ease), box-shadow .7s var(--ease)">
             <svg class="w-[18px] h-[18px] shrink-0 text-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>
             <input id="searchInput" type="text" autocomplete="off" placeholder="Search city, neighborhood or venue"
@@ -376,7 +388,7 @@ tailwind.config = {
             </button>
           </div>
 
-          <div id="suggestPanel" class="hidden absolute left-0 right-0 top-[calc(100%+10px)] glass glass-sh rounded-2xl p-2 z-40 max-h-[62vh] overflow-y-auto nb">
+          <div id="suggestPanel" class="hidden absolute left-0 right-0 top-[calc(100%+10px)] glass glass-strong glass-sh rounded-2xl p-2 z-40 max-h-[62vh] overflow-y-auto nb">
             <div class="p-2">
               <p class="text-[10px] tracking-[.32em] uppercase text-muted px-3 pt-2 pb-3">Recent</p>
               <div id="recentList"></div>
@@ -392,7 +404,7 @@ tailwind.config = {
         <div class="mt-7 flex items-center gap-7 md:gap-10 overflow-x-auto nb">
           <span class="hidden sm:block text-[10.5px] tracking-[.42em] uppercase text-muted shrink-0">When</span>
           <div id="dateFilter" class="relative flex items-center gap-7 md:gap-10 shrink-0">
-            <span id="dfInk" class="absolute bottom-[7px] h-[2px] rounded-full" style="background:var(--accent); left:0; width:0; transition:left .55s var(--ease), width .55s var(--ease)"></span>
+            <span id="dfInk" class="absolute bottom-[7px] h-[2px] rounded-full" style="background:var(--accent); left:0; width:0; transform:translateX(0); transition:transform .55s var(--ease), width .55s var(--ease)"></span>
             <button class="df on" data-d="today">Today</button>
             <button class="df" data-d="weekend">This Weekend</button>
             <button class="df" data-d="week">This Week</button>
@@ -653,7 +665,7 @@ tailwind.config = {
     <p class="text-[15.5px] text-muted max-w-lg leading-relaxed">Tell us what you&rsquo;re in the mood for. We&rsquo;ll build an evening from events that are genuinely on &mdash; with travel time in between.</p>
   </div>
 
-  <div class="glass glass-sh rounded-[26px] p-6 md:p-10 grid lg:grid-cols-12 gap-10 rv">
+  <div class="glass glass-strong glass-sh rounded-[26px] p-6 md:p-10 grid lg:grid-cols-12 gap-10 rv">
     <form id="planForm" class="lg:col-span-5 flex flex-col gap-7">
       <div>
         <label class="text-[10.5px] tracking-[.3em] uppercase text-muted block mb-3">Location</label>
@@ -742,41 +754,107 @@ tailwind.config = {
 </main>
 
 <!-- ═══════════════ FOOTER ═══════════════ -->
-<footer class="border-t" style="border-color:var(--line)">
-  <div class="max-w-[1560px] mx-auto px-5 md:px-10 py-16 md:py-24">
-    <div class="grid md:grid-cols-12 gap-12">
-      <div class="md:col-span-5">
+<footer class="relative border-t overflow-hidden" style="border-color:var(--line)">
+
+  <!-- ── CTA band ── -->
+  <div class="max-w-[1560px] mx-auto px-5 md:px-10 pt-20 md:pt-28 pb-16 md:pb-20">
+    <div class="grid lg:grid-cols-12 gap-10 lg:gap-16 items-end">
+      <div class="lg:col-span-7 rv">
+        <div class="flex items-center gap-3.5 mb-5">
+          <span class="h-[2px] w-8 rounded-full" style="background:var(--accent)"></span>
+          <p class="text-[10.5px] tracking-[.42em] uppercase text-muted">Stay in the loop</p>
+        </div>
+        <h2 class="display font-light text-[clamp(1.9rem,5vw,3.8rem)] leading-[.98] tracking-[-.03em]">
+          Never miss a night<br class="hidden md:block" /> worth remembering.
+        </h2>
+      </div>
+      <div class="lg:col-span-5 rv rv-r">
+        <form id="newsForm" class="glass glass-strong glass-sh rounded-2xl flex items-center gap-2 p-2 pl-5">
+          <input type="email" required placeholder="you@email.com" aria-label="Email address"
+                 class="flex-1 min-w-0 bg-transparent outline-none text-[15px] py-3 placeholder:text-muted/70" />
+          <button type="submit" class="btn h-11 px-6 rounded-xl border border-line text-[12.5px] font-medium shrink-0" data-cursor="OPEN" data-magnetic>
+            <span>Subscribe</span>
+          </button>
+        </form>
+        <p id="newsNote" class="text-[12px] text-muted mt-4">One email a week. What&rsquo;s on near you &mdash; nothing else.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── link columns ── -->
+  <div class="max-w-[1560px] mx-auto px-5 md:px-10">
+    <div class="border-t pt-14 md:pt-16 grid grid-cols-2 md:grid-cols-12 gap-10 md:gap-8" style="border-color:var(--line)">
+
+      <div class="col-span-2 md:col-span-4">
         <div class="flex items-center gap-3 mb-6">
           <span class="w-2 h-2 rounded-full" style="background:var(--accent)"></span>
           <span class="display text-[23px] font-semibold tracking-[.18em]">EVENTRA</span>
         </div>
-        <p class="text-[14.5px] text-muted max-w-xs leading-relaxed">Discover what&rsquo;s happening around you.</p>
+        <p class="text-[14.5px] text-muted max-w-[290px] leading-relaxed mb-7">Discover what&rsquo;s happening around you.</p>
+        <div class="flex items-center gap-2.5 mb-8">
+          <a href="#" aria-label="Instagram" data-cursor="OPEN" class="grid place-items-center w-9 h-9 rounded-full border border-line text-muted hover:text-accent hover:border-accent transition-colors duration-500">
+            <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#" aria-label="X" data-cursor="OPEN" class="grid place-items-center w-9 h-9 rounded-full border border-line text-muted hover:text-accent hover:border-accent transition-colors duration-500">
+            <svg class="w-[14px] h-[14px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 5l14 14M19 5L5 19"/></svg>
+          </a>
+          <a href="#" aria-label="YouTube" data-cursor="OPEN" class="grid place-items-center w-9 h-9 rounded-full border border-line text-muted hover:text-accent hover:border-accent transition-colors duration-500">
+            <svg class="w-[16px] h-[16px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.5" y="6" width="19" height="12" rx="3.5"/><path d="M11 9.6l4 2.4-4 2.4z" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="#" aria-label="LinkedIn" data-cursor="OPEN" class="grid place-items-center w-9 h-9 rounded-full border border-line text-muted hover:text-accent hover:border-accent transition-colors duration-500">
+            <svg class="w-[15px] h-[15px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 11v6M8 8v.01M12 17v-3.5a2 2 0 0 1 4 0V17"/></svg>
+          </a>
+        </div>
+        <p class="text-[11.5px] tracking-wide text-muted leading-relaxed">Mumbai &middot; Delhi &middot; London<br />Paris &middot; New York</p>
       </div>
+
       <div class="md:col-span-2">
         <p class="text-[10.5px] tracking-[.3em] uppercase text-muted mb-6">Explore</p>
         <ul class="flex flex-col gap-3.5 text-[13.5px] text-muted">
-          <li><a href="#discover" class="hover:text-ink transition-colors">Events</a></li>
-          <li><a href="#map" class="hover:text-ink transition-colors">Map</a></li>
-          <li><a href="#radar" class="hover:text-ink transition-colors">Radar</a></li>
-          <li><a href="#organizers" class="hover:text-ink transition-colors">About</a></li>
+          <li><a href="#discover" class="hover:text-ink transition-colors duration-500">Events</a></li>
+          <li><a href="#map" class="hover:text-ink transition-colors duration-500">Map</a></li>
+          <li><a href="#radar" class="hover:text-ink transition-colors duration-500">Radar</a></li>
+          <li><a href="#now" class="hover:text-ink transition-colors duration-500">Tonight</a></li>
+          <li><a href="#organizers" class="hover:text-ink transition-colors duration-500">About</a></li>
         </ul>
       </div>
+
       <div class="md:col-span-3">
         <p class="text-[10.5px] tracking-[.3em] uppercase text-muted mb-6">For organizers</p>
         <ul class="flex flex-col gap-3.5 text-[13.5px] text-muted">
-          <li><a href="#submit" class="hover:text-ink transition-colors">List an Event</a></li>
-          <li><a href="#" class="hover:text-ink transition-colors">Partner With Us</a></li>
-          <li><span style="color:var(--ink)">Founder &mdash; Vaibhav Verma</span></li>
+          <li><a href="#submit" class="hover:text-ink transition-colors duration-500">List an Event</a></li>
+          <li><a href="#" class="hover:text-ink transition-colors duration-500">Partner With Us</a></li>
+          <li><a href="#" class="hover:text-ink transition-colors duration-500">Organizer Analytics</a></li>
+          <li><a href="#" class="hover:text-ink transition-colors duration-500">Featured Listings</a></li>
         </ul>
       </div>
-      <div class="md:col-span-2">
+
+      <div class="md:col-span-3">
         <p class="text-[10.5px] tracking-[.3em] uppercase text-muted mb-6">Contact</p>
-        <a href="mailto:hello@eventra.com" class="text-[13.5px] text-muted hover:text-ink transition-colors u-link">hello@eventra.com</a>
+        <a href="mailto:hello@eventra.com" class="u-link text-[13.5px] text-muted hover:text-ink transition-colors duration-500">hello@eventra.com</a>
+        <p class="text-[13.5px] text-muted mt-5 leading-relaxed">Founder<br /><span style="color:var(--ink)">Vaibhav Verma</span></p>
       </div>
     </div>
-    <div class="mt-16 pt-8 border-t flex flex-col md:flex-row justify-between gap-4 text-[12px] text-muted" style="border-color:var(--line)">
+  </div>
+
+  <!-- ── oversized wordmark, clipped by the footer edge ── -->
+  <div class="px-5 md:px-10 select-none pointer-events-none" aria-hidden="true">
+    <p class="display font-semibold tracking-[-.03em] leading-[.72] text-center whitespace-nowrap translate-y-[18%]"
+       style="font-size:clamp(3.4rem,18.5vw,17rem); color:var(--ink); opacity:.06">EVENTRA</p>
+  </div>
+
+  <!-- ── utility bar ── -->
+  <div class="relative border-t" style="border-color:var(--line); background:var(--bg)">
+    <div class="max-w-[1560px] mx-auto px-5 md:px-10 py-6 flex flex-col md:flex-row items-center justify-between gap-5 text-[12px] text-muted">
       <p>&copy; 2026 Eventra. All rights reserved.</p>
-      <p class="tracking-wide">Mumbai &middot; Delhi &middot; London &middot; Paris &middot; New York</p>
+      <div class="flex items-center gap-7">
+        <a href="#" class="hover:text-ink transition-colors duration-500">Privacy</a>
+        <a href="#" class="hover:text-ink transition-colors duration-500">Terms</a>
+        <a href="#" class="hover:text-ink transition-colors duration-500">Cookies</a>
+      </div>
+      <button id="toTop" class="group inline-flex items-center gap-2 hover:text-ink transition-colors duration-500" data-cursor="OPEN">
+        Back to top <span class="arrow-up text-[14px] leading-none">&uarr;</span>
+      </button>
     </div>
   </div>
 </footer>
@@ -1113,10 +1191,15 @@ document.addEventListener('DOMContentLoaded', ()=>{
   /* ── smooth scroll (Lenis) ── */
   let lenis=null;
   if(window.Lenis && !RM){
-    lenis=new Lenis({ duration:1.05, smoothWheel:true, wheelMultiplier:1, touchMultiplier:1.6,
-      easing:t=>Math.min(1,1.001-Math.pow(2,-10*t)) });
-    const raf=t=>{ lenis.raf(t); requestAnimationFrame(raf); };
-    requestAnimationFrame(raf);
+    lenis=new Lenis({
+      lerp:0.11,          // short, responsive inertia — a long duration is what
+                          // reads as "laggy" rather than "smooth"
+      smoothWheel:true,
+      wheelMultiplier:1,
+      touchMultiplier:1.8,
+      syncTouch:false,    // let touch devices use native momentum scrolling
+      autoRaf:false       // driven by the single shared rAF loop below
+    });
   }
   const goTo = (target)=>{
     const el = typeof target==='string' ? $(target) : target;
@@ -1169,37 +1252,74 @@ document.addEventListener('DOMContentLoaded', ()=>{
   }, {threshold:.6});
   counters.forEach(c=>cio.observe(c));
 
-  /* ── nav + progress + parallax ── */
-  const nav=$('#nav');
-  let lastY=window.scrollY;
-  const blobs=[['#blobA',.10],['#blobB',-.07],['#blobC',.05]];
-  function onScroll(){
-    const y=window.scrollY;
-    if(y>26){ nav.classList.add('glass','glass-sh'); nav.style.borderColor='var(--line)'; }
-    else{ nav.classList.remove('glass','glass-sh'); nav.style.borderColor='transparent'; }
-    if(!RM){
-      if(y>lastY && y>320) nav.style.transform='translateY(-105%)';
-      else nav.style.transform='translateY(0)';
-    }
-    lastY=y;
-    const h=document.documentElement.scrollHeight-window.innerHeight;
-    $('#progress').style.width=(h>0?(y/h)*100:0)+'%';
-    if(!RM){ blobs.forEach(([id,f])=>{ const el=$(id); if(el) el.style.transform=`translate3d(0,${y*f}px,0)`; }); }
-  }
-  window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+  /* ── pointer state (written once, consumed by the rAF loop) ── */
+  const ptr={x:innerWidth/2, y:innerHeight/2, cx:innerWidth/2, cy:innerHeight/2, px:0, py:0};
+  let cursorOn=false, peekOn=false, cur=null, peekEl=null, peekImg=null;
+  const spot={x:0, y:0, on:false, dirty:false};
 
-  /* ── spotlight follows pointer in hero ── */
   const heroSection=$('section');
   if(FINE && !RM && heroSection){
     heroSection.addEventListener('mousemove', e=>{
       const r=heroSection.getBoundingClientRect();
-      const sp=$('#spot');
-      sp.style.setProperty('--mx', (e.clientX-r.left)+'px');
-      sp.style.setProperty('--my', (e.clientY-r.top)+'px');
-      sp.style.opacity='1';
-    });
-    heroSection.addEventListener('mouseleave', ()=>$('#spot').style.opacity='0');
+      spot.x=e.clientX-r.left; spot.y=e.clientY-r.top; spot.dirty=true;
+      if(!spot.on){ spot.on=true; $('#spot').style.opacity='1'; }
+    }, {passive:true});
+    heroSection.addEventListener('mouseleave', ()=>{ spot.on=false; $('#spot').style.opacity='0'; });
   }
+
+  /* ── scroll chrome ──
+     The old version read document.scrollHeight (forced reflow) AND wrote width
+     on every scroll event. Now: height is cached + invalidated by ResizeObserver,
+     and the bar animates via transform only. */
+  const nav=$('#nav'), prog=$('#progress');
+  let maxScroll=1, lastY=-1, navGlass=null, navHidden=false;
+  const measure=()=>{ maxScroll=Math.max(1, document.documentElement.scrollHeight-window.innerHeight); };
+  if('ResizeObserver' in window){ new ResizeObserver(measure).observe(document.body); }
+  window.addEventListener('resize', measure, {passive:true});
+  window.addEventListener('load', measure, {once:true});
+  measure();
+
+  function chrome(){
+    const y=window.scrollY;
+    if(y===lastY) return;
+    const prev=lastY; lastY=y;
+    const g = y>26;
+    if(g!==navGlass){
+      navGlass=g;
+      nav.classList.toggle('glass', g);
+      nav.classList.toggle('glass-sh', g);
+      nav.style.borderColor = g ? 'var(--line)' : 'transparent';
+    }
+    if(!RM){
+      const h = y>prev && y>320;
+      if(h!==navHidden){ navHidden=h; nav.style.transform = h ? 'translateY(-105%)' : 'translateY(0)'; }
+    }
+    prog.style.transform = 'scaleX(' + Math.min(1, y/maxScroll).toFixed(4) + ')';
+  }
+
+  /* ── single rAF loop: scroll smoothing + cursor + spotlight ── */
+  (function frame(t){
+    if(lenis) lenis.raf(t);
+    chrome();
+    if(cursorOn){
+      ptr.cx += (ptr.x-ptr.cx)*0.24;
+      ptr.cy += (ptr.y-ptr.cy)*0.24;
+      const rx=Math.round(ptr.cx*10)/10, ry=Math.round(ptr.cy*10)/10;
+      if(cur) cur.style.transform='translate3d('+rx+'px,'+ry+'px,0) translate(-50%,-50%)';
+      if(peekOn && peekEl){
+        ptr.px += (ptr.x-ptr.px)*0.16;
+        ptr.py += (ptr.y-ptr.py)*0.16;
+        peekEl.style.transform='translate3d('+Math.round(ptr.px*10)/10+'px,'+Math.round(ptr.py*10)/10+'px,0) translate(-50%,-50%)';
+      }
+    }
+    if(spot.dirty){
+      spot.dirty=false;
+      const sp=$('#spot');
+      sp.style.setProperty('--mx', spot.x.toFixed(1)+'px');
+      sp.style.setProperty('--my', spot.y.toFixed(1)+'px');
+    }
+    requestAnimationFrame(frame);
+  })(0);
 
   /* ── theme ── */
   const root=document.documentElement;
@@ -1216,7 +1336,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   /* ── date filter ink ── */
   const dfInk=$('#dfInk');
   function moveInk(btn){
-    dfInk.style.left=btn.offsetLeft+'px';
+    dfInk.style.transform='translateX('+btn.offsetLeft+'px)';
     dfInk.style.width=btn.offsetWidth+'px';
   }
   $$('#dateFilter .df').forEach(b=>b.addEventListener('click',()=>{
@@ -1247,6 +1367,21 @@ document.addEventListener('DOMContentLoaded', ()=>{
     setTimeout(()=>{ renderItinerary(true); $('#itinerary').style.opacity='1'; $('#planStatus').textContent='4 stops · ₹2,450 est.'; }, 720);
   });
 
+  /* ── footer: newsletter + back to top ──
+     The form is front-end only — there is no endpoint wired up yet. */
+  const newsForm=$('#newsForm');
+  if(newsForm) newsForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    const note=$('#newsNote');
+    note.textContent='Thanks \u2014 we\u2019ll be in touch.';
+    note.style.color='var(--live)';
+    const s=newsForm.querySelector('button span');
+    if(s) s.textContent='Subscribed';
+    newsForm.reset();
+  });
+  const toTop=$('#toTop');
+  if(toTop) toTop.addEventListener('click', ()=>goTo('#top'));
+
   /* ── search ── */
   const input=$('#searchInput'), panel=$('#suggestPanel'), box=$('#searchBox');
   input.addEventListener('focus',()=>{
@@ -1264,28 +1399,29 @@ document.addEventListener('DOMContentLoaded', ()=>{
   $('#menuBtn').addEventListener('click',()=>$('#mobileMenu').classList.toggle('hidden'));
   $$('.mlink').forEach(a=>a.addEventListener('click',()=>$('#mobileMenu').classList.add('hidden')));
 
-  /* ── cursor, peek, magnetic, tilt ── */
+  /* ── cursor, peek, magnetic, tilt ──
+     The cursor + peek are driven by the shared rAF loop above (transform only,
+     never left/top) so they never trigger layout. */
   if(FINE && !RM){
     document.body.classList.add('cc');
-    const cur=$('#cursor'), label=cur.querySelector('span'), peek=$('#peek'), peekImg=$('#peekImg');
-    let x=innerWidth/2,y=innerHeight/2,cx=x,cy=y, px=x,py=y, hasPeek=false;
-    window.addEventListener('mousemove',e=>{ x=e.clientX; y=e.clientY; });
-    (function loop(){
-      cx+=(x-cx)*.2; cy+=(y-cy)*.2;
-      cur.style.left=cx+'px'; cur.style.top=cy+'px';
-      px+=(x-px)*.12; py+=(y-py)*.12;
-      if(hasPeek){ peek.style.left=px+'px'; peek.style.top=py+'px'; }
-      requestAnimationFrame(loop);
-    })();
+    cur=$('#cursor'); peekEl=$('#peek'); peekImg=$('#peekImg');
+    const label=cur.querySelector('span');
+    ptr.px=ptr.x; ptr.py=ptr.y;
+    window.addEventListener('mousemove',e=>{ ptr.x=e.clientX; ptr.y=e.clientY; }, {passive:true});
+    cursorOn=true;
     document.addEventListener('mouseover',e=>{
       const t=e.target.closest('[data-cursor]');
-      if(t){ label.textContent=t.dataset.cursor||'VIEW'; cur.classList.add('big'); }
-      else cur.classList.remove('big','acc');
       const p=e.target.closest('[data-peek]');
-      if(p){ hasPeek=true; peekImg.src=p.dataset.peek; peek.classList.add('on'); cur.classList.remove('big'); }
-      else { hasPeek=false; peek.classList.remove('on'); }
+      if(p){
+        if(!peekOn){ peekOn=true; peekImg.src=p.dataset.peek; peekEl.classList.add('on'); }
+        cur.classList.remove('big');
+      } else {
+        if(peekOn){ peekOn=false; peekEl.classList.remove('on'); }
+        if(t){ label.textContent=t.dataset.cursor||'VIEW'; cur.classList.add('big'); }
+        else cur.classList.remove('big','acc');
+      }
     });
-    document.addEventListener('mouseleave',()=>{ cur.style.opacity='0'; peek.classList.remove('on'); });
+    document.addEventListener('mouseleave',()=>{ cur.style.opacity='0'; peekEl.classList.remove('on'); peekOn=false; });
     document.addEventListener('mouseenter',()=>{ cur.style.opacity='1'; });
 
     /* magnetic buttons */
@@ -1315,3 +1451,4 @@ document.addEventListener('DOMContentLoaded', ()=>{
 </script>
 </body>
 </html>
+
